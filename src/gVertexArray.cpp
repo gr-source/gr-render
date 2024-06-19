@@ -4,7 +4,7 @@
 #include "gl.h"
 
 namespace grr {
-    gVertexArray::gVertexArray() : m_bufferSize(0), m_vao(-1) {}
+    gVertexArray::gVertexArray() : m_vao(-1) {}
 
     gVertexArray* gVertexArray::m_instance = nullptr;
 
@@ -26,9 +26,8 @@ namespace grr {
 
     std::unordered_map<u32, u32> gVertexArray::m_bufferIndex;
 
-    gVertexArray *gVertexArray::Create(u32 bufferSize, u16 stride, bool hasElements) {
+    gVertexArray *gVertexArray::Create() {
         gVertexArray* vertexArray = new gVertexArray();
-        vertexArray->m_bufferSize = bufferSize;
 
         GL_CALL(glGenVertexArrays(1, &vertexArray->m_vao));
 
@@ -36,8 +35,12 @@ namespace grr {
     }
 
     u32 gVertexArray::CreateBuffer(BufferType target, u32 size, u16 stride) {
-        u32 m_index = 0;
+        u32 m_index = -1;
         GL_CALL(glGenBuffers(1, &m_index));
+        if (m_index == -1) {
+            std::cout << "falied to create buffers" << std::endl;
+            return -1;
+        }
 
         GL_CALL(glBindBuffer(m_bufferTypeMap[target], m_index));
         GL_CALL(glBufferData(m_bufferTypeMap[target], size * stride, nullptr, GL_STATIC_DRAW));
@@ -49,12 +52,26 @@ namespace grr {
         return m_index;
     }
 
+    void gVertexArray::DeleteBuffer(u32 index) {
+        auto it = m_bufferIndex.find(index);
+        if (it != m_bufferIndex.end()) {
+            GL_CALL(glDeleteBuffers(1, &index));
+
+            m_bufferIndex.erase(it);
+        }
+    }
+
     void gVertexArray::Bind(u32 index) {
         GL_CALL(glBindBuffer(m_bufferIndex[index], index));
     }
 
     void gVertexArray::SetAttrib(u8 index, u16 size, u16 stride, const void *pointer) {
         GL_CALL(glVertexAttribPointer(static_cast<GLuint>(index), static_cast<GLint>(size), GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), pointer));
+        GL_CALL(glEnableVertexAttribArray(static_cast<GLuint>(index)));
+    }
+
+    void gVertexArray::SetAttribI(u8 index, u16 size, u16 stride, const void *pointer) {
+        GL_CALL(glVertexAttribIPointer(static_cast<GLuint>(index), static_cast<GLint>(size), GL_INT, static_cast<GLsizei>(stride), pointer));
         GL_CALL(glEnableVertexAttribArray(static_cast<GLuint>(index)));
     }
 

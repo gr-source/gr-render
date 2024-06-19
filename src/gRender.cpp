@@ -226,7 +226,7 @@ namespace grr {
     }
 
     void gRender::CreateVertexArray3D() {
-        m_vertexArray3D = gVertexArray::Create(MAX_BLOCK_BUFFER, sizeof(gVertex3D), true);
+        m_vertexArray3D = gVertexArray::Create();
         m_vertexArray3D->bind();
 
         indexEbo3D = gVertexArray::CreateBuffer(BufferType_EBO, MAX_BLOCK_BUFFER, sizeof(u32));

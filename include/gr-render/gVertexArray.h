@@ -9,13 +9,16 @@ namespace grr {
     public:
         gVertexArray();
         
-        static gVertexArray* Create(u32 bufferSize, u16 stride, bool hasElements);
+        static gVertexArray* Create();
 
         static u32 CreateBuffer(BufferType target, u32 size, u16 stride);
+
+        static void DeleteBuffer(u32 index);
 
         static void Bind(u32 index);
 
         static void SetAttrib(u8 index, u16 size, u16 stride, const void* pointer);
+        static void SetAttribI(u8 index, u16 size, u16 stride, const void* pointer);
 
         static void UpdateResize(u32 index, u32 size, u16 stride);
 
@@ -33,7 +36,6 @@ namespace grr {
 
         void destroy();
     private:
-        u32 m_bufferSize;
         u32 m_vao;
 
         static gVertexArray* m_instance;
