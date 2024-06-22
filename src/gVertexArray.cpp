@@ -1,6 +1,5 @@
 #include "gVertexArray.h"
 
-// #include "gRender.h"
 #include "gl.h"
 
 namespace grr {
@@ -34,18 +33,14 @@ namespace grr {
         return vertexArray;
     }
 
-    u32 gVertexArray::CreateBuffer(BufferType target, u32 size, u16 stride) {
+    u32 gVertexArray::CreateBuffer(BufferType target) {
         u32 m_index = -1;
         GL_CALL(glGenBuffers(1, &m_index));
         if (m_index == -1) {
             std::cout << "falied to create buffers" << std::endl;
             return -1;
         }
-
         GL_CALL(glBindBuffer(m_bufferTypeMap[target], m_index));
-        GL_CALL(glBufferData(m_bufferTypeMap[target], size * stride, nullptr, GL_STATIC_DRAW));
-
-        GL_CALL(glBindBuffer(m_bufferTypeMap[target], 0));
 
         m_bufferIndex.emplace(m_index, m_bufferTypeMap[target]);
 

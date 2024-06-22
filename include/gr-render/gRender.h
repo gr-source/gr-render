@@ -15,7 +15,7 @@ namespace grr {
 
         static void SetRenderState(RenderState state, void* value);
 
-        static void SetRenderState(RenderState state, u16 value);
+        static void SetRenderState(RenderState state, u32 value);
 
         static const std::string getRenderStateName(RenderState state);
 
@@ -45,6 +45,8 @@ namespace grr {
 
         static std::unordered_map<PrimitiveType, u32> m_primitiveMap;
 
+        static std::unordered_map<u32, u32> m_renderStateMap;
+
         static gShader* m_shader2D;
         static gShader* m_shader3D;
         static gShader* m_shaderInstanced3D;
@@ -59,6 +61,5 @@ namespace grr {
 
         static void CreateVertexArray3D();
 
-        static void ReizeBuffer(BufferBindingTarget target, u16 stride, u32 size);
     };
 }

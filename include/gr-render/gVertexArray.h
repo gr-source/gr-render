@@ -11,7 +11,7 @@ namespace grr {
         
         static gVertexArray* Create();
 
-        static u32 CreateBuffer(BufferType target, u32 size, u16 stride);
+        static u32 CreateBuffer(BufferType target);
 
         static void DeleteBuffer(u32 index);
 

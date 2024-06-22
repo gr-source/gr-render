@@ -14,6 +14,18 @@ namespace grr {
         {BufferBindingTarget::GR_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER}
     };
 
+    std::unordered_map<u32, u32> gRender::m_renderStateMap = {
+        {GR_DEPTH_ALWAYS, GL_ALWAYS},
+        {GR_DEPTH_NEVER, GL_NEVER},
+        {GR_DEPTH_LESS, GL_LESS},
+        {GR_DEPTH_EQUAL, GL_EQUAL},
+        {GR_DEPTH_LEQUAL, GL_LEQUAL},
+        {GR_DEPTH_GREATER, GL_GREATER},
+        {GR_DEPTH_NOTEQUAL, GL_NOTEQUAL},
+        {GR_FALSE, GL_FALSE},
+        {GR_TRUE, GL_TRUE},
+    };
+
     gVertexArray* gRender::m_vertexArray2D = nullptr;
     gVertexArray* gRender::m_vertexArray3D = nullptr;
 
@@ -46,7 +58,7 @@ namespace grr {
         }
     }
 
-    void gRender::SetRenderState(RenderState state, u16 value) {
+    void gRender::SetRenderState(RenderState state, u32 value) {
         switch (state) {
         case GR_BACKGROUND: {
             GLbitfield filter = 0;
@@ -77,6 +89,13 @@ namespace grr {
                 return GL_CALL(glEnable(GL_DEPTH_TEST));
             }
             return GL_CALL(glDisable(GL_DEPTH_TEST));
+        }
+        case GR_DEPTH_MASK: {
+            GL_CALL(glDepthMask(m_renderStateMap[value]));
+            break;
+        }
+        case GR_DEPTH_FUNC: {
+            return GL_CALL(glDepthFunc(m_renderStateMap[value]));
         }
         default:
             std::cout << "Invalid Va: " << getRenderStateName(state) << std::endl;
@@ -118,12 +137,12 @@ namespace grr {
         #endif
 
         CreateVertexArray2D();
-        m_shader2D = gShader::Create({(glVersion + fragmentShader2D).c_str()}, {(glVersion + vertexShader2D).c_str()});
+        // m_shader2D = gShader::Create({(glVersion + fragmentShader2D).c_str()}, {(glVersion + vertexShader2D).c_str()});
 
         CreateVertexArray3D();
-        m_shader3D = gShader::Create({(glVersion + fragmentShader3D).c_str()}, {(glVersion + vertexShader3D).c_str()});
+        // m_shader3D = gShader::Create({(glVersion + fragmentShader3D).c_str()}, {(glVersion + vertexShader3D).c_str()});
 
-        m_shaderInstanced3D = gShader::Create({(glVersion + fragmentShader3D).c_str()}, {(glVersion + vertexShaderInstance3D).c_str()});
+        // m_shaderInstanced3D = gShader::Create({(glVersion + fragmentShader3D).c_str()}, {(glVersion + vertexShaderInstance3D).c_str()});
 
         return true;
     }
@@ -137,7 +156,7 @@ namespace grr {
         Matrix4x4 projection = Math::orthographic(0.0f, m_width, 0.0f, m_height, -1.0f, 1.0f);
         
         m_shader2D->bind();
-        m_shader2D->SetUniformMat4("projection", projection);
+        gShader::SetUniform("projection", 1, projection);
     }
 
     void gRender::RenderTexture2D(const Matrix3x3 &model, gTexture *texture) {
@@ -166,8 +185,8 @@ namespace grr {
 
     void gRender::Render3D(const Matrix4x4& projection, const Matrix4x4& view) {
         m_shaderInstanced3D->bind();
-        m_shaderInstanced3D->SetUniformMat4("projection", projection);
-        m_shaderInstanced3D->SetUniformMat4("view", view);
+        gShader::SetUniform("projection", 1, projection);
+        gShader::SetUniform("view", 1, view);
     }
 
     void gRender::RenderPrimitive3D(PrimitiveType primitive, u32 numVertice, void *vertice) {
@@ -226,16 +245,35 @@ namespace grr {
     }
 
     void gRender::CreateVertexArray3D() {
+        // Create Buffer
         m_vertexArray3D = gVertexArray::Create();
+        if (!m_vertexArray3D) {
+            GR_ASSERT("Falied to create vao buffer");
+        }
+
+        indexEbo3D = gVertexArray::CreateBuffer(BufferType_EBO);
+        if (!indexEbo3D) {
+            GR_ASSERT("Falied to create ebo buffer.");
+        }
+
+        indexVbo3D = gVertexArray::CreateBuffer(BufferType_VBO);
+        if (!indexVbo3D) {
+            GR_ASSERT("Falied to create vbo buffer.");
+        }
+
+        indexPrimi3D = gVertexArray::CreateBuffer(BufferType_DEFAULT);
+        if (!indexPrimi3D) {
+            GR_ASSERT("Falied to create prim buffer.");
+        }
+
+        // Config buffer
         m_vertexArray3D->bind();
 
-        indexEbo3D = gVertexArray::CreateBuffer(BufferType_EBO, MAX_BLOCK_BUFFER, sizeof(u32));
+        gVertexArray::Bind(indexEbo3D);
 
-        indexVbo3D = gVertexArray::CreateBuffer(BufferType_VBO, MAX_BLOCK_BUFFER, sizeof(gVertex3D));
         gVertexArray::Bind(indexVbo3D);
         gVertexArray::SetAttrib(0, 3, sizeof(gVertex3D), reinterpret_cast<void*>(offsetof(gVertex3D, position)));
 
-        indexPrimi3D = gVertexArray::CreateBuffer(BufferType_DEFAULT, MAX_BLOCK_BUFFER, sizeof(Matrix4x4));
         gVertexArray::Bind(indexPrimi3D);
 
         for (int i = 0; i < 4; ++i) {

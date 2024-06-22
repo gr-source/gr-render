@@ -12,16 +12,12 @@ namespace grr {
         static gShader* GetCurrent();
 
         template <typename T>
-        static void SetUniform(const std::string& name, u16 count, const T* data);
+        static void SetUniform(const std::string& name, u16 count, const T& data);
 
         template <typename T>
-        static void SetUniform(const std::string& name, const T data);
+        static void SetUniform(const std::string& name, const T* data);
 
         void bind();
-
-        void SetUniformMat4(const std::string& name, const Matrix4x4& value);
-
-        void SetUniformInt(const std::string& name, int value);
 
         void unbind();
 

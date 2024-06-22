@@ -37,6 +37,14 @@ namespace grr {
     }
 
     template <>
+    void gShader::SetUniform(const std::string& name, u16 count, const Matrix4x4& data) {
+        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
+        if (location != -1) {
+            GL_CALL(glUniformMatrix4fv(location, static_cast<GLsizei>(count), GL_FALSE, data.data));
+        }
+    }
+
+    template <>
     void gShader::SetUniform(const std::string& name, const int* data) {
         GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
         if (location != -1) {
@@ -47,20 +55,6 @@ namespace grr {
     void gShader::bind() {
         GL_CALL(glUseProgram(m_index));
         gShader::m_instance = this;
-    }
-
-    void gShader::SetUniformMat4(const std::string &name, const Matrix4x4 &value) {
-        GLint location = GL_CALL(glGetUniformLocation(m_index, name.c_str()));
-        if (location != -1) {
-            GL_CALL(glUniformMatrix4fv(location, 1, GL_FALSE, value.data));
-        }
-    }
-
-    void gShader::SetUniformInt(const std::string &name, int value) {
-        GLint location = GL_CALL(glGetUniformLocation(m_index, name.c_str()));
-        if (location != -1) {
-            GL_CALL(glUniform1i(location, value));
-        }
     }
 
     void gShader::unbind() {
