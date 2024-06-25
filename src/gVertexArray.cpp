@@ -7,9 +7,11 @@ namespace grr {
 
     gVertexArray* gVertexArray::m_instance = nullptr;
 
+    u32 gVertexArray::s_currentBuffer = 0;
+
     std::unordered_map<BufferType, u32> gVertexArray::m_bufferTypeMap {
         {BufferType_VBO, GL_ARRAY_BUFFER},
-        {BufferType_DEFAULT, GL_ARRAY_BUFFER},
+        {BufferType_PBO, GL_ARRAY_BUFFER},
         {BufferType_EBO, GL_ELEMENT_ARRAY_BUFFER}
     };
 
@@ -57,6 +59,8 @@ namespace grr {
     }
 
     void gVertexArray::Bind(u32 index) {
+        s_currentBuffer = m_bufferIndex[index];
+
         GL_CALL(glBindBuffer(m_bufferIndex[index], index));
     }
 
@@ -70,19 +74,19 @@ namespace grr {
         GL_CALL(glEnableVertexAttribArray(static_cast<GLuint>(index)));
     }
 
-    void gVertexArray::UpdateResize(u32 index, u32 size, u16 stride) {
+    void gVertexArray::UpdateResize(u32 size, u16 stride) {
         int arraySize = 0;
-        GL_CALL(glGetBufferParameteriv(m_bufferIndex[index], GL_BUFFER_SIZE,  &arraySize));
+        GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         
         while ((size * stride) > arraySize) {
-            GL_CALL(glBufferData(m_bufferIndex[index], (arraySize + (GR_MAX_BLOCK_BUFFER * stride)), nullptr, GL_STATIC_DRAW));
+            GL_CALL(glBufferData(s_currentBuffer, (arraySize + (GR_MAX_BLOCK_BUFFER * stride)), nullptr, GL_STATIC_DRAW));
 
-            GL_CALL(glGetBufferParameteriv(m_bufferIndex[index], GL_BUFFER_SIZE,  &arraySize));
+            GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         }
     }
 
-    void gVertexArray::SetBufferUpdate(u32 index, u32 offset, u32 size, const void *data) {
-        GL_CALL(glBufferSubData(m_bufferIndex[index], offset, size, data));
+    void gVertexArray::SetBufferUpdate(u32 offset, u32 size, const void *data) {
+        GL_CALL(glBufferSubData(s_currentBuffer, offset, size, data));
     }
 
     void gVertexArray::DrawElementsInstanced(PrimitiveType primitive, u32 count, const void *indices, u32 primcount) {

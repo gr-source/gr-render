@@ -71,9 +71,9 @@ namespace grr {
     };
 
     enum BufferType : u32 {
-        BufferType_VBO = 1 << 1,
-        BufferType_EBO = 1 << 2,
-        BufferType_DEFAULT = 1 << 1
+        BufferType_VBO = 1 << 1, // Vertex Buffer Object
+        BufferType_EBO = 1 << 2, // Element Buffer Object
+        BufferType_PBO = 1 << 1  // Primitive Buffer Object
     };
 
     enum PrimitiveType {

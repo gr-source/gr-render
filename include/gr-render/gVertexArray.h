@@ -20,9 +20,9 @@ namespace grr {
         static void SetAttrib(u8 index, u16 size, u16 stride, const void* pointer);
         static void SetAttribI(u8 index, u16 size, u16 stride, const void* pointer);
 
-        static void UpdateResize(u32 index, u32 size, u16 stride);
+        static void UpdateResize(u32 size, u16 stride);
 
-        static void SetBufferUpdate(u32 index, u32 offset, u32 size, const void* data);
+        static void SetBufferUpdate(u32 offset, u32 size, const void* data);
 
         static void DrawElementsInstanced(PrimitiveType primitive, u32 count, const void* indices, u32 primcount);
 
@@ -39,6 +39,8 @@ namespace grr {
         u32 m_vao;
 
         static gVertexArray* m_instance;
+
+        static u32 s_currentBuffer;
 
         static std::unordered_map<BufferType, u32> m_bufferTypeMap;
 

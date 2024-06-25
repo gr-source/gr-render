@@ -45,6 +45,14 @@ namespace grr {
     }
 
     template <>
+    void gShader::SetUniform(const std::string& name, u16 count, const Vector3& data) {
+        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
+        if (location != -1) {
+            GL_CALL(glUniform3fv(location, static_cast<GLsizei>(count), data.data));
+        }
+    }
+
+    template <>
     void gShader::SetUniform(const std::string& name, const int* data) {
         GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
         if (location != -1) {

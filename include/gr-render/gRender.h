@@ -28,8 +28,10 @@ namespace grr {
         static void RenderTexture2D(const Matrix3x3& model, gTexture* texture);
 
         static void RenderPrimitive2D(PrimitiveType primitive, u32 numVertice, void* vertice);
+        
+        static void RenderPrimitive2D(PrimitiveType primitive, u32 numVertice, void* vertice, u32 numIndice, void* indice);
 
-        static void RenderIndexedPrimitive2D(PrimitiveType primitive, u32 numVertice, void* vertice, u32 numIndice, void* indice);
+        static void RenderPrimitive2D(PrimitiveType primitive, u32 numVertice, void* vertice, u32 numIndice, void* indice, u32 numPrim, void *prim);
 
         static void Render3D(const Matrix4x4& projection, const Matrix4x4& model);
 
@@ -39,7 +41,7 @@ namespace grr {
 
         static void RenderPrimitive3D(PrimitiveType primitive, u32 numVertice, void* vertice, u32 numIndice, void* indice, u32 numPrim, void *prim);
 
-        static void OpenGLShutsown();
+        static void OpenGLShutdown();
     private:
         static std::unordered_map<BufferBindingTarget, u32> m_bufferMap;
 
@@ -56,6 +58,10 @@ namespace grr {
 
         static u32 m_height;
         static u32 m_width;
+
+        static u32 buffers2D[3];
+
+        static u32 buffers3D[3];
 
         static void CreateVertexArray2D();
 
