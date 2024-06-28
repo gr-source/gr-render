@@ -13,7 +13,7 @@ namespace grr {
 
         void unbind();
 
-        const u32& getIndex() const;
+        const u32& getID() const;
 
         const bool isValid() const;
 

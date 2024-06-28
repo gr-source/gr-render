@@ -65,7 +65,7 @@ namespace grr {
         GL_CALL(glBindTexture(GL_TEXTURE_2D, m_index));
     }
 
-    const u32& gTexture::getIndex() const {
+    const u32& gTexture::getID() const {
         return m_index;
     }
 

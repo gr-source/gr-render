@@ -9,15 +9,20 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 set(render_src
+    src/gRenderbuffer.cpp
     src/gVertexArray.cpp
+    src/gFramebuffer.cpp
     src/gTexture.cpp
     src/gRender.cpp
     src/gShader.cpp
+    src/gCommon.cpp
     src/gl.cpp
 )
 
 set(render_hdr
     include/${PROJECT_NAME}/gShaderSource.h
+    include/${PROJECT_NAME}/gRenderbuffer.h
+    include/${PROJECT_NAME}/gFramebuffer.h
     include/${PROJECT_NAME}/gVertexArray.h
     include/${PROJECT_NAME}/gVertex2D.h
     include/${PROJECT_NAME}/gVertex3D.h
@@ -62,40 +67,39 @@ if(GR_COMPILE_LINUX)
 
     ## Install
     install(DIRECTORY include/${PROJECT_NAME}
-            DESTINATION include
-        )
+        DESTINATION include
+    )
 
-        install(TARGETS ${PROJECT_NAME}
-            EXPORT ${PROJECT_NAME}Targets
-            LIBRARY DESTINATION lib/${PROJECT_NAME}
-            ARCHIVE DESTINATION lib/${PROJECT_NAME}
-            RUNTIME DESTINATION bin/${PROJECT_NAME}
-        )
+    install(TARGETS ${PROJECT_NAME}
+        EXPORT ${PROJECT_NAME}Targets
+        LIBRARY DESTINATION lib/${PROJECT_NAME}
+        ARCHIVE DESTINATION lib/${PROJECT_NAME}
+        RUNTIME DESTINATION bin/${PROJECT_NAME}
+    )
 
-        install(EXPORT ${PROJECT_NAME}Targets
-            FILE ${PROJECT_NAME}Targets.cmake
-            NAMESPACE ${PROJECT_NAME}::
-            DESTINATION lib/${PROJECT_NAME}/cmake
-        )
+    install(EXPORT ${PROJECT_NAME}Targets
+        FILE ${PROJECT_NAME}Targets.cmake
+        NAMESPACE ${PROJECT_NAME}::
+        DESTINATION lib/${PROJECT_NAME}/cmake
+    )
 
-        include(CMakePackageConfigHelpers)
-        write_basic_package_version_file(
-            "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-            VERSION ${PROJECT_VERSION}
-            COMPATIBILITY SameMajorVersion
-        )
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
 
-        configure_package_config_file(
-            "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-            INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
-        )
+    configure_package_config_file(
+        "${CMAKE_CURRENT_LIST_DIR}/Config.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
+    )
 
-        install(FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION lib/${PROJECT_NAME}/cmake
-        )
-
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake" DESTINATION lib/${PROJECT_NAME}/cmake
+    )
 else()
     find_library(EGL-lib EGL)
     find_library(GLESv3-lib GLESv3)

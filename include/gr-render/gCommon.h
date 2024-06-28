@@ -15,7 +15,9 @@
 #define GR_ASSERT(msg) assert(false && msg)
 
 namespace grr {
+    class gRenderbuffer;
     class gVertexArray;
+    class gFramebuffer;
     class gTexture;
     class gRender;
     class gShader;
@@ -84,6 +86,27 @@ namespace grr {
         PrimitiveType_Triangles = 4,
         PrimitiveType_TriangleStrip = 5,
         PrimitiveType_TriangleFan = 6
+    };
+
+    enum FramebufferType {
+        FramebufferType_Color_Attachiment0 = 1 << 0,
+        FramebufferType_Color_Attachiment1 = 1 << 1,
+        FramebufferType_Color_Attachiment2 = 1 << 2,
+        FramebufferType_Color_Attachiment3 = 1 << 3,
+        FramebufferType_Color_Attachiment4 = 1 << 4,
+        FramebufferType_Color_Attachiment5 = 1 << 5,
+        FramebufferType_Depth_Attachiment  = 1 << 7,
+    };
+
+    enum RenderbufferType {
+        RenderbufferType_Depth_Component     = 1 << 0,
+        RenderbufferType_Depth_Component16   = 1 << 1,
+        RenderbufferType_Depth_Component24   = 1 << 2,
+        RenderbufferType_Depth_Component32F  = 1 << 3,
+        RenderbufferType_Depth24_Stencil8    = 1 << 4,
+        RenderbufferType_Depth_Stencil       = 1 << 5,
+        RenderbufferType_Depth32F_Stencil8   = 1 << 6,
+        RenderbufferType_Stencil             = 1 << 7
     };
 };
 
