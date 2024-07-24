@@ -45,6 +45,8 @@ namespace grr {
         GR_DEPTH_GREATER    = 1 << 20,
         GR_DEPTH_NOTEQUAL   = 1 << 21,
         GR_DEPTH_GEQUAL     = 1 << 22,
+        GR_MULTISAMPLE      = 1 << 23,
+        GR_FRAMEBUFFER_SRGB = 1 << 24,
     };
 
     enum BufferBindingTarget {

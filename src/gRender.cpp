@@ -100,6 +100,18 @@ namespace grr {
         case GR_DEPTH_FUNC: {
             return GL_CALL(glDepthFunc(m_renderStateMap[value]));
         }
+        case GR_MULTISAMPLE: {
+            if (value == GR_TRUE) {
+                return glEnable(GL_MULTISAMPLE);
+            }
+            return glDisable(GL_MULTISAMPLE);
+        }
+        case GR_FRAMEBUFFER_SRGB: {
+            if (state == GR_TRUE) {
+                return glEnable(GL_FRAMEBUFFER_SRGB);
+            }
+            return glDisable(GL_FRAMEBUFFER_SRGB);
+        }
         default:
             std::cout << "Invalid Va: " << getRenderStateName(state) << std::endl;
         }

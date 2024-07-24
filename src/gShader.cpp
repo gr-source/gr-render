@@ -1,31 +1,38 @@
 #include "gShader.h"
 
 #include "gl.h"
+#include "gColor.h"
 
 namespace grr {
     gShader* gShader::m_instance = nullptr;
 
-    gShader::gShader() : m_index(0) {}
+    gShader::gShader() : m_id(0) {}
 
     gShader *gShader::Create(const std::vector<const char*>& fragments, const std::vector<const char*>& vertex) {
         gShader* shader = new gShader();
-        shader->m_index = GL_CALL(glCreateProgram());
+        shader->m_id = GL_CALL(glCreateProgram());
         
+        // Create Fragment shader object
         u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
         GL_CALL(glShaderSource(fragmentShaderID, fragments.size(), fragments.data(), nullptr));
         GL_CALL(glCompileShader(fragmentShaderID));
         gShader::checkerrors(fragmentShaderID, true);
 
+        // Create vertex shader object
         u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
         GL_CALL(glShaderSource(vertexShaderID, vertex.size(), vertex.data(), nullptr));
         GL_CALL(glCompileShader(vertexShaderID));
         gShader::checkerrors(vertexShaderID, true);
 
-        GL_CALL(glAttachShader(shader->m_index, fragmentShaderID));
-        GL_CALL(glAttachShader(shader->m_index, vertexShaderID));
-        GL_CALL(glLinkProgram(shader->m_index));
-        gShader::checkerrors(shader->m_index, false);
+        // attach shader object in to program
+        GL_CALL(glAttachShader(shader->m_id, fragmentShaderID));
+        GL_CALL(glAttachShader(shader->m_id, vertexShaderID));
 
+        // link shaders object in program
+        GL_CALL(glLinkProgram(shader->m_id));
+        gShader::checkerrors(shader->m_id, false);
+
+        // clean shader object
         GL_CALL(glDeleteShader(fragmentShaderID));
         GL_CALL(glDeleteShader(vertexShaderID));
 
@@ -36,32 +43,53 @@ namespace grr {
         return gShader::m_instance;
     }
 
+    void gShader::Register(const std::string &name) {
+        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_id, name.c_str()));
+        if (location != -1) {
+            m_instance->m_uniformMap[name] = location;
+        } else {
+            std::cout << "Uniform do not search: " << name << std::endl;
+        }
+    }
+
     template <>
     void gShader::SetUniform(const std::string& name, u16 count, const Matrix4x4& data) {
-        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
-        if (location != -1) {
-            GL_CALL(glUniformMatrix4fv(location, static_cast<GLsizei>(count), GL_FALSE, data.data));
+        auto it = m_instance->m_uniformMap.find(name);
+        if (m_instance->m_uniformMap.end() != it) {
+            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, data.data));
         }
     }
 
     template <>
     void gShader::SetUniform(const std::string& name, u16 count, const Vector3& data) {
-        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
-        if (location != -1) {
-            GL_CALL(glUniform3fv(location, static_cast<GLsizei>(count), data.data));
+        auto it = m_instance->m_uniformMap.find(name);
+        if (m_instance->m_uniformMap.end() != it) {
+            GL_CALL(glUniform3fv(it->second, static_cast<GLsizei>(count), data.data));
         }
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, const int* data) {
-        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_index, name.c_str()));
-        if (location != -1) {
-            GL_CALL(glUniform1i(location, *static_cast<const GLint*>(data)));
+    void gShader::SetUniform(const std::string& name, u16 count, const gColor& data) {
+        auto it = m_instance->m_uniformMap.find(name);
+        if (m_instance->m_uniformMap.end() != it) {
+            GL_CALL(glUniform4fv(it->second, static_cast<GLsizei>(count), data.data));
         }
     }
 
+    template <>
+    void gShader::SetUniform(const std::string& name, int data) {
+        auto it = m_instance->m_uniformMap.find(name);
+        if (m_instance->m_uniformMap.end() != it) {
+            GL_CALL(glUniform1i(it->second, static_cast<const GLint>(data)));
+        }
+    }
+
+    const bool gShader::isValid() const {
+        return m_id != 0;
+    }
+
     void gShader::bind() {
-        GL_CALL(glUseProgram(m_index));
+        GL_CALL(glUseProgram(m_id));
         gShader::m_instance = this;
     }
 
@@ -71,6 +99,9 @@ namespace grr {
     }
 
     void gShader::destroy() {
+        if (m_id) {
+            GL_CALL(glDeleteProgram(m_id));
+        }
         delete this;
     }
 

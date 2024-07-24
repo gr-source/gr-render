@@ -21,13 +21,13 @@ namespace grr {
         #undef GETENUMNAME
     }
 
-    void check_erros_opengl(const std::string &name) {
+    void check_erros_opengl(const std::string &name, const std::string & file) {
         u32 numErrors = 0;
         GLenum err;
 
         while ((err = glGetError()) != GL_NO_ERROR) {
             numErrors++;
-            std::cout << "Opengl error: " << name << "(" << get_enum_name(err) << ")" << std::endl;
+            std::cout << "Opengl error: " << name << " - Code: " << get_enum_name(err) << " - " << file << std::endl;
         }
     }
 } // namespace grr

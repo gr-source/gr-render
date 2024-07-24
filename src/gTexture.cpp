@@ -8,8 +8,7 @@ namespace grr {
 
     gTexture::gTexture() : m_width(0), m_height(0), m_index(-1) {}
 
-    gTexture *gTexture::Create(u32 width, u32 height, TextureFormat format, void *pixels)
-    {
+    gTexture *gTexture::Create(u32 width, u32 height, TextureFormat format, void *pixels) {
         gTexture* texture = new gTexture();
         texture->m_height = height;
         texture->m_width = width;
@@ -23,8 +22,8 @@ namespace grr {
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
         GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
 
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
         switch (format) {
         case TextureFormat_RGB:

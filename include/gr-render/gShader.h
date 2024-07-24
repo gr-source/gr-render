@@ -11,11 +11,15 @@ namespace grr {
 
         static gShader* GetCurrent();
 
+        static void Register(const std::string& name);
+
         template <typename T>
         static void SetUniform(const std::string& name, u16 count, const T& data);
 
         template <typename T>
-        static void SetUniform(const std::string& name, const T* data);
+        static void SetUniform(const std::string& name, T data);
+
+        const bool isValid() const;
 
         void bind();
 
@@ -24,7 +28,9 @@ namespace grr {
         void destroy();
 
     private:
-        u32 m_index;
+        u32 m_id;
+
+        std::unordered_map<std::string, u32> m_uniformMap;
 
         static gShader* m_instance;
 
