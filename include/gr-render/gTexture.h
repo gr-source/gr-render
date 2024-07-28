@@ -9,7 +9,7 @@ namespace grr {
         
         static gTexture* Create(u32 width, u32 height, TextureFormat format, void* pixels);
 
-        void bind();
+        void bind(int texture = 0);
 
         void unbind();
 

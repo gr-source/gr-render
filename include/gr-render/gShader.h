@@ -7,7 +7,7 @@ namespace grr {
     public:
         gShader();
 
-        static gShader* Create(const std::vector<const char*>& fragments, const std::vector<const char*>& vertex);
+        static gShader* Create(const char **fragments, const char **vertex);
 
         static gShader* GetCurrent();
 
@@ -15,6 +15,9 @@ namespace grr {
 
         template <typename T>
         static void SetUniform(const std::string& name, u16 count, const T& data);
+
+        template <typename T>
+        static void SetUniform(const std::string &name, u8 count, const T *value);
 
         template <typename T>
         static void SetUniform(const std::string& name, T data);
@@ -34,6 +37,6 @@ namespace grr {
 
         static gShader* m_instance;
 
-        static void checkerrors(u32 shader, bool compile);
+        static const bool checkerrors(u32 shader, bool compile);
     };
 }

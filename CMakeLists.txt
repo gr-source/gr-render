@@ -16,6 +16,7 @@ set(render_src
     src/gRender.cpp
     src/gShader.cpp
     src/gCommon.cpp
+    src/gError.cpp
     src/gl.cpp
 )
 
@@ -31,6 +32,7 @@ set(render_hdr
     include/${PROJECT_NAME}/gShader.h
     include/${PROJECT_NAME}/gCommon.h
     include/${PROJECT_NAME}/gColor.h
+    include/${PROJECT_NAME}/gError.h
     include/${PROJECT_NAME}/gTypes.h
 )
 

@@ -14,18 +14,14 @@ namespace grr {
         texture->m_width = width;
         texture->m_format = format;
 
-
         GL_CALL(glGenTextures(1, &texture->m_index));
 
         GL_CALL(glBindTexture(GL_TEXTURE_2D, texture->m_index));
 
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-
         switch (format) {
+        case TextureFormat_SRGB:
+            GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels));
+            break;
         case TextureFormat_RGB:
             GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels));
             break;
@@ -41,6 +37,9 @@ namespace grr {
         case TextureFormat_RGB888:
             GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels));
             break;
+        case TextureFormat_SRGBA:
+            GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
+            break;
         case TextureFormat_RGBA:
             GL_CALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
             break;
@@ -54,13 +53,21 @@ namespace grr {
             break;
         }
 
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+
+        GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
+        
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+        GL_CALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
         return texture;
     }
 
-    void gTexture::bind() {
-        GL_CALL(glActiveTexture(GL_TEXTURE0));
+    void gTexture::bind(int texture) {
+        GL_CALL(glActiveTexture(GL_TEXTURE0 + texture));
         GL_CALL(glBindTexture(GL_TEXTURE_2D, m_index));
     }
 

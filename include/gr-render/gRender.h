@@ -1,7 +1,11 @@
 #pragma once
 
-#include "gCommon.h"
 #include "gColor.h"
+
+#include "gVertexArray.h"
+#include "gTexture.h"
+#include "gShader.h"
+#include "gError.h"
 
 #include <sstream>
 #include <iomanip>

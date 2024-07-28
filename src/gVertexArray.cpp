@@ -36,11 +36,11 @@ namespace grr {
     }
 
     u32 gVertexArray::CreateBuffer(BufferType target) {
-        u32 m_index = -1;
+        u32 m_index = 0;
         GL_CALL(glGenBuffers(1, &m_index));
-        if (m_index == -1) {
+        if (!m_index) {
             std::cout << "falied to create buffers" << std::endl;
-            return -1;
+            return 0;
         }
         GL_CALL(glBindBuffer(m_bufferTypeMap[target], m_index));
 
