@@ -12,6 +12,12 @@ namespace grr {
 
     gShader::gShader() : m_id(0) {}
 
+    gShader::~gShader() {
+        if (m_id) {
+            GL_CALL(glDeleteProgram(m_id));
+        }
+    }
+
     gShader *gShader::Create(const char **fragments, const char **vertex) {
         gShader* shader = new gShader();
         shader->m_id = GL_CALL(glCreateProgram());
@@ -23,7 +29,7 @@ namespace grr {
         if (gShader::checkerrors(fragmentShaderID, true)) {
             GL_CALL(glDeleteShader(fragmentShaderID));
 
-            shader->destroy();
+            delete shader;
 
             return nullptr;
         }
@@ -36,7 +42,7 @@ namespace grr {
             GL_CALL(glDeleteShader(fragmentShaderID));
             GL_CALL(glDeleteShader(vertexShaderID));
 
-            shader->destroy();
+            delete shader;
 
             return nullptr;
         }
@@ -51,7 +57,7 @@ namespace grr {
             GL_CALL(glDeleteShader(fragmentShaderID));
             GL_CALL(glDeleteShader(vertexShaderID));
 
-            shader->destroy();
+            delete shader;
 
             return nullptr;
         }
@@ -61,6 +67,54 @@ namespace grr {
         GL_CALL(glDeleteShader(vertexShaderID));
 
         return shader;
+    }
+
+    void gShader::Create(gShader *shader, const char **fragments, const char **vertex) {
+        shader->m_id = GL_CALL(glCreateProgram());
+        
+        // Create Fragment shader object
+        u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
+        GL_CALL(glShaderSource(fragmentShaderID, NELEMS(fragments), fragments, nullptr));
+        GL_CALL(glCompileShader(fragmentShaderID));
+        if (gShader::checkerrors(fragmentShaderID, true)) {
+            GL_CALL(glDeleteShader(fragmentShaderID));
+
+            delete shader;
+
+            return;
+        }
+
+        // Create vertex shader object
+        u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
+        GL_CALL(glShaderSource(vertexShaderID, NELEMS(vertex), vertex, nullptr));
+        GL_CALL(glCompileShader(vertexShaderID));
+        if (gShader::checkerrors(vertexShaderID, true)) {
+            GL_CALL(glDeleteShader(fragmentShaderID));
+            GL_CALL(glDeleteShader(vertexShaderID));
+
+            delete shader;
+
+            return;
+        }
+
+        // attach shader object in to program
+        GL_CALL(glAttachShader(shader->m_id, fragmentShaderID));
+        GL_CALL(glAttachShader(shader->m_id, vertexShaderID));
+
+        // link shaders object in program
+        GL_CALL(glLinkProgram(shader->m_id));
+        if (gShader::checkerrors(shader->m_id, false)) {
+            GL_CALL(glDeleteShader(fragmentShaderID));
+            GL_CALL(glDeleteShader(vertexShaderID));
+
+            delete shader;
+
+            return;
+        }
+
+        // clean shader object
+        GL_CALL(glDeleteShader(fragmentShaderID));
+        GL_CALL(glDeleteShader(vertexShaderID));
     }
 
     gShader *gShader::GetCurrent() {
@@ -97,10 +151,20 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u8 count, const int *value) {
+    void gShader::SetUniform(const std::string& name, u16 count, const int *value) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform1iv(it->second, static_cast<GLsizei>(count), static_cast<const GLint*>(value)));
+        } else {
+            std::cout << "Invalid Uniform: " << name << std::endl;
+        }
+    }
+
+    template <>
+    void gShader::SetUniform(const std::string& name, u16 count, const Matrix4x4 *value) {
+        auto it = m_instance->m_uniformMap.find(name);
+        if (m_instance->m_uniformMap.end() != it) {
+            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, reinterpret_cast<const GLfloat *>(value)));
         } else {
             std::cout << "Invalid Uniform: " << name << std::endl;
         }
@@ -168,13 +232,6 @@ namespace grr {
     void gShader::unbind() {
         GL_CALL(glUseProgram(0));
         gShader::m_instance = nullptr;
-    }
-
-    void gShader::destroy() {
-        if (m_id) {
-            GL_CALL(glDeleteProgram(m_id));
-        }
-        delete this;
     }
 
     const bool gShader::checkerrors(u32 shader, bool compile) {

@@ -1,5 +1,7 @@
 #include "gl.h"
 
+#include <sstream>
+
 namespace grr {
     const char* get_enum_name(GLenum err) {
         #define GETENUMNAME(e) case e: return #e;
@@ -25,9 +27,13 @@ namespace grr {
         u32 numErrors = 0;
         GLenum err;
 
+        std::ostringstream oss;
+
         while ((err = glGetError()) != GL_NO_ERROR) {
             numErrors++;
-            std::cout << "Opengl error: " << name << " - Code: " << get_enum_name(err) << " - " << file << std::endl;
+            oss << "Opengl error: " << name << " - Code: " << get_enum_name(err) << " - " << file << std::endl;
+            throw std::runtime_error(oss.str());
         }
+
     }
 } // namespace grr

@@ -5,9 +5,12 @@
 namespace grr {
     class gTexture {
     public:
-        gTexture();
-        
         static gTexture* Create(u32 width, u32 height, TextureFormat format, void* pixels);
+
+        static void PushTexture(gTexture *texture, u32 width, u32 height, TextureFormat format, void* pixels);
+
+        gTexture();
+        ~gTexture();
 
         void bind(int texture = 0);
 
@@ -16,8 +19,7 @@ namespace grr {
         const u32& getID() const;
 
         const bool isValid() const;
-
-        void destroy();
+        
     private:
         u32 m_height;
         u32 m_width;

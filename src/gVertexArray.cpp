@@ -74,12 +74,12 @@ namespace grr {
         GL_CALL(glEnableVertexAttribArray(static_cast<GLuint>(index)));
     }
 
-    void gVertexArray::UpdateResize(u32 size, u16 stride) {
+    void gVertexArray::UpdateResize(u32 size) {
         int arraySize = 0;
         GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         
-        while ((size * stride) > arraySize) {
-            GL_CALL(glBufferData(s_currentBuffer, (arraySize + (GR_MAX_BLOCK_BUFFER * stride)), nullptr, GL_STATIC_DRAW));
+        while (size != arraySize) {
+            GL_CALL(glBufferData(s_currentBuffer, size, nullptr, GL_STATIC_DRAW));
 
             GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         }

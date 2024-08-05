@@ -28,6 +28,7 @@ namespace grr {
         {GR_DEPTH_NOTEQUAL, GL_NOTEQUAL},
         {GR_FALSE, GL_FALSE},
         {GR_TRUE, GL_TRUE},
+        {GR_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
     };
 
     gVertexArray* gRender::m_vertexArray2D = nullptr;
@@ -112,6 +113,16 @@ namespace grr {
             }
             return glDisable(GL_FRAMEBUFFER_SRGB);
         }
+        case GR_BLEND: {
+            if (value == GR_TRUE) {
+                return GL_CALL(glEnable(GL_BLEND));
+            }
+            return GL_CALL(glDisable(GL_BLEND));
+        }
+        case GR_SRC_ALPHA: {
+            glBlendFunc(GL_SRC_ALPHA, m_renderStateMap[value]);
+            break;
+        }
         default:
             std::cout << "Invalid Va: " << getRenderStateName(state) << std::endl;
         }
@@ -181,7 +192,7 @@ namespace grr {
         m_vertexArray2D->bind();
 
         gVertexArray::Bind(buffers2D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex2D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex2D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex2D), vertice);
 
         gVertexArray::DrawArrays(primitive, numVertice);
@@ -191,11 +202,11 @@ namespace grr {
         m_vertexArray2D->bind();
 
         gVertexArray::Bind(buffers2D[EBO_INDEX]);
-        gVertexArray::UpdateResize(numIndice, sizeof(u32));
+        gVertexArray::UpdateResize(numIndice * sizeof(u32));
         gVertexArray::SetBufferUpdate(0, numIndice * sizeof(u32), indice);
 
         gVertexArray::Bind(buffers2D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex2D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex2D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex2D), vertice);
 
         gVertexArray::DrawElements(primitive, numIndice, nullptr);
@@ -205,15 +216,15 @@ namespace grr {
         m_vertexArray2D->bind();
 
         gVertexArray::Bind(buffers2D[EBO_INDEX]);
-        gVertexArray::UpdateResize(numIndice, sizeof(u32));
+        gVertexArray::UpdateResize(numIndice * sizeof(u32));
         gVertexArray::SetBufferUpdate(0, numIndice * sizeof(u32), indice);
 
         gVertexArray::Bind(buffers2D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex2D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex2D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex2D), vertice);
 
         gVertexArray::Bind(buffers2D[PBO_INDEX]);
-        gVertexArray::UpdateResize(numPrim, sizeof(Matrix4x4));
+        gVertexArray::UpdateResize(numPrim * sizeof(Matrix4x4));
         gVertexArray::SetBufferUpdate(0, numPrim * sizeof(Matrix4x4), prim);
 
         gVertexArray::DrawElements(primitive, numIndice, nullptr);
@@ -229,7 +240,7 @@ namespace grr {
         m_vertexArray3D->bind();
 
         gVertexArray::Bind(buffers3D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex3D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex3D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex3D), vertice);
 
         gVertexArray::DrawArrays(primitive, numVertice);
@@ -239,11 +250,11 @@ namespace grr {
         m_vertexArray3D->bind();
 
         gVertexArray::Bind(buffers3D[EBO_INDEX]);
-        gVertexArray::UpdateResize(numIndice, sizeof(u32));
+        gVertexArray::UpdateResize(numIndice * sizeof(u32));
         gVertexArray::SetBufferUpdate(0, numIndice * sizeof(u32), indice);
 
         gVertexArray::Bind(buffers3D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex3D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex3D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex3D), vertice);
 
         gVertexArray::DrawElements(primitive, numIndice, nullptr);
@@ -253,15 +264,15 @@ namespace grr {
         m_vertexArray3D->bind();
 
         gVertexArray::Bind(buffers3D[EBO_INDEX]);
-        gVertexArray::UpdateResize(numIndice, sizeof(u32));
+        gVertexArray::UpdateResize(numIndice * sizeof(u32));
         gVertexArray::SetBufferUpdate(0, numIndice * sizeof(u32), indice);
 
         gVertexArray::Bind(buffers3D[VBO_INDEX]);
-        gVertexArray::UpdateResize(numVertice, sizeof(gVertex3D));
+        gVertexArray::UpdateResize(numVertice * sizeof(gVertex3D));
         gVertexArray::SetBufferUpdate(0, numVertice * sizeof(gVertex3D), vertice);
 
         gVertexArray::Bind(buffers3D[PBO_INDEX]);
-        gVertexArray::UpdateResize(numPrim, sizeof(Matrix4x4));
+        gVertexArray::UpdateResize(numPrim * sizeof(Matrix4x4));
         gVertexArray::SetBufferUpdate(0, numPrim * sizeof(Matrix4x4), prim);
 
         gVertexArray::DrawElementsInstanced(PrimitiveType_Triangles, numIndice, nullptr, numPrim);
@@ -336,10 +347,10 @@ namespace grr {
 
     void gRender::OpenGLShutdown() {
         if (m_shader2D) {
-            m_shader2D->destroy();
+            delete m_shader2D;
         }
         if (m_shader3D) {
-            m_shader3D->destroy();
+            delete m_shader3D;
         }
 
         if (m_vertexArray2D) {

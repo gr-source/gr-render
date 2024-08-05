@@ -20,7 +20,7 @@ namespace grr {
         static void SetAttrib(u8 index, u16 size, u16 stride, const void* pointer);
         static void SetAttribI(u8 index, u16 size, u16 stride, const void* pointer);
 
-        static void UpdateResize(u32 size, u16 stride);
+        static void UpdateResize(u32 size);
 
         static void SetBufferUpdate(u32 offset, u32 size, const void* data);
 
