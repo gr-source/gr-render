@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gCommon.h"
+#include "gRenderbuffer.h"
 
 namespace grr {
     class gFramebuffer {

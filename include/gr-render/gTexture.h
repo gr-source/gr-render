@@ -9,6 +9,10 @@ namespace grr {
 
         static void PushTexture(gTexture *texture, u32 width, u32 height, TextureFormat format, void* pixels);
 
+        static void Bind(gTexture *texture, int idx);
+
+        static void Unbind();
+
         gTexture();
         ~gTexture();
 

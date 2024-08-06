@@ -69,7 +69,8 @@ namespace grr {
         texture->m_width = width;
         texture->m_format = format;
 
-        GL_CALL(glGenTextures(1, &texture->m_index));
+        if (!texture->isValid())
+            GL_CALL(glGenTextures(1, &texture->m_index));
 
         GL_CALL(glBindTexture(GL_TEXTURE_2D, texture->m_index));
 
@@ -119,7 +120,20 @@ namespace grr {
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 
-    gTexture::gTexture() : m_width(0), m_height(0), m_index(-1) {}
+    void gTexture::Bind(gTexture *texture, int idx) {
+        if (!texture) {
+            return;
+        }
+        GL_CALL(glActiveTexture(GL_TEXTURE0 + idx));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, texture->m_index));
+    }
+
+    void gTexture::Unbind() {
+        GL_CALL(glActiveTexture(GL_TEXTURE0));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+
+    gTexture::gTexture() : m_width(0), m_height(0), m_index(0) {}
 
     gTexture::~gTexture() {
         if (m_index) {
@@ -137,7 +151,7 @@ namespace grr {
     }
 
     const bool gTexture::isValid() const {
-        return m_index != -1;
+        return m_index;
     }
 } // namespace gr
 

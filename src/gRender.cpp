@@ -52,7 +52,7 @@ namespace grr {
             break;
         }
         case GR_VIEWPORT: {
-            Vector2* size = (Vector2*)value;
+            iVector2* size = (iVector2*)value;
             GL_CALL(glViewport(0, 0, size->x, size->y));
             break;
         }
@@ -108,10 +108,10 @@ namespace grr {
             return glDisable(GL_MULTISAMPLE);
         }
         case GR_FRAMEBUFFER_SRGB: {
-            if (state == GR_TRUE) {
-                return glEnable(GL_FRAMEBUFFER_SRGB);
+            if (value == GR_TRUE) {
+                return GL_CALL(glEnable(GL_FRAMEBUFFER_SRGB));
             }
-            return glDisable(GL_FRAMEBUFFER_SRGB);
+            return GL_CALL(glDisable(GL_FRAMEBUFFER_SRGB));
         }
         case GR_BLEND: {
             if (value == GR_TRUE) {

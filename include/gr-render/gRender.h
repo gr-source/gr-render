@@ -2,6 +2,7 @@
 
 #include "gColor.h"
 
+#include "gFramebuffer.h"
 #include "gVertexArray.h"
 #include "gTexture.h"
 #include "gShader.h"
