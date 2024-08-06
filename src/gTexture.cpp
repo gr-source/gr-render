@@ -120,8 +120,8 @@ namespace grr {
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 
-    void gTexture::Bind(gTexture *texture, int idx) {
-        if (!texture) {
+    void gTexture::Bind(const gTexture *texture, int idx) {
+        if (!texture || !texture->isValid()) {
             return;
         }
         GL_CALL(glActiveTexture(GL_TEXTURE0 + idx));
