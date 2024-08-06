@@ -10,8 +10,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
 set(render_src
     src/gRenderbuffer.cpp
-    src/gVertexArray.cpp
     src/gFramebuffer.cpp
+    src/gVertexArray.cpp
     src/gTexture.cpp
     src/gRender.cpp
     src/gShader.cpp
