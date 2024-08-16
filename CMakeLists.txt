@@ -25,15 +25,12 @@ set(render_hdr
     include/${PROJECT_NAME}/gRenderbuffer.h
     include/${PROJECT_NAME}/gFramebuffer.h
     include/${PROJECT_NAME}/gVertexArray.h
-    include/${PROJECT_NAME}/gVertex2D.h
-    include/${PROJECT_NAME}/gVertex3D.h
     include/${PROJECT_NAME}/gTexture.h
     include/${PROJECT_NAME}/gRender.h
     include/${PROJECT_NAME}/gShader.h
     include/${PROJECT_NAME}/gCommon.h
     include/${PROJECT_NAME}/gColor.h
     include/${PROJECT_NAME}/gError.h
-    include/${PROJECT_NAME}/gTypes.h
 )
 
 if(GR_COMPILE_STATIC_LIBRARY)

@@ -8,10 +8,6 @@
 
 #include <gr-math/gmath.h>
 
-#include "gVertex2D.h"
-#include "gVertex3D.h"
-#include "gTypes.h"
-
 #define GR_ASSERT(msg) assert(false && msg)
 
 namespace grr {
@@ -22,7 +18,7 @@ namespace grr {
     class gRender;
     class gShader;
 
-    enum RenderState : u32 {
+    enum RenderState : grm::u32 {
         GR_FALSE               = 1 << 1,
         GR_TRUE                = 1 << 2,
         GR_BACKGROUND_COLOR    = 1 << 3,
@@ -65,7 +61,7 @@ namespace grr {
         // GR_UNIFORM_BUFFER            = 1 << 13,
     };
 
-    enum TextureFormat : u16 {
+    enum TextureFormat : grm::u16 {
         TextureFormat_SRGB = 1 << 0,
         TextureFormat_RGB = 1 << 1,
         TextureFormat_RGB332 = 1 << 2,
@@ -79,7 +75,12 @@ namespace grr {
         TextureFormat_RGBA8888 = 1 << 10
     };
 
-    enum BufferType : u32 {
+    enum gTextureFlags {
+        gTextureFlags_None = 1 << 0,
+        gTextureFlags_MipMaps = 1 << 1,
+    };
+
+    enum BufferType : grm::u32 {
         BufferType_VBO = 1 << 1, // Vertex Buffer Object
         BufferType_EBO = 1 << 2, // Element Buffer Object
         BufferType_PBO = 1 << 1  // Primitive Buffer Object

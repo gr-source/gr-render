@@ -17,10 +17,10 @@ namespace grr {
         static void Register(const std::string& name);
 
         template <typename T>
-        static void SetUniform(const std::string& name, u16 count, const T& data);
+        static void SetUniform(const std::string& name, grm::u16 count, const T& data);
 
         template <typename T>
-        static void SetUniform(const std::string &name, u16 count, const T *value);
+        static void SetUniform(const std::string &name, grm::u16 count, const T *value);
 
         template <typename T>
         static void SetUniform(const std::string& name, T data);
@@ -32,12 +32,12 @@ namespace grr {
         void unbind();
 
     private:
-        u32 m_id;
+        grm::u32 m_id;
 
-        std::unordered_map<std::string, u32> m_uniformMap;
+        std::unordered_map<std::string, grm::u32> m_uniformMap;
 
         static gShader* m_instance;
 
-        static const bool checkerrors(u32 shader, bool compile);
+        static const bool checkerrors(grm::u32 shader, bool compile);
     };
 }

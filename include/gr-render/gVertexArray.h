@@ -11,24 +11,24 @@ namespace grr {
         
         static gVertexArray* Create();
 
-        static u32 CreateBuffer(BufferType target);
+        static grm::u32 CreateBuffer(BufferType target);
 
-        static void DeleteBuffer(u32 index);
+        static void DeleteBuffer(grm::u32 index);
 
-        static void Bind(u32 index);
+        static void Bind(grm::u32 index);
 
-        static void SetAttrib(u8 index, u16 size, u16 stride, const void* pointer);
-        static void SetAttribI(u8 index, u16 size, u16 stride, const void* pointer);
+        static void SetAttrib(grm::u8 index, grm::u16 size, grm::u16 stride, const void* pointer);
+        static void SetAttribI(grm::u8 index, grm::u16 size, grm::u16 stride, const void* pointer);
 
-        static void UpdateResize(u32 size);
+        static void UpdateResize(grm::u32 size);
 
-        static void SetBufferUpdate(u32 offset, u32 size, const void* data);
+        static void SetBufferUpdate(grm::u32 offset, grm::u32 size, const void* data);
 
-        static void DrawElementsInstanced(PrimitiveType primitive, u32 count, const void* indices, u32 primcount);
+        static void DrawElementsInstanced(PrimitiveType primitive, grm::u32 count, const void* indices, grm::u32 primcount);
 
-        static void DrawElements(PrimitiveType primitive, u32 count, const void* indices);
+        static void DrawElements(PrimitiveType primitive, grm::u32 count, const void* indices);
 
-        static void DrawArrays(PrimitiveType primitive, u32 count);
+        static void DrawArrays(PrimitiveType primitive, grm::u32 count);
 
         void bind();
 
@@ -36,16 +36,16 @@ namespace grr {
 
         void destroy();
     private:
-        u32 m_vao;
+        grm::u32 m_vao;
 
         static gVertexArray* m_instance;
 
-        static u32 s_currentBuffer;
+        static grm::u32 s_currentBuffer;
 
-        static std::unordered_map<BufferType, u32> m_bufferTypeMap;
+        static std::unordered_map<BufferType, grm::u32> m_bufferTypeMap;
 
-        static std::unordered_map<PrimitiveType, u32> m_primitiveMap;
+        static std::unordered_map<PrimitiveType, grm::u32> m_primitiveMap;
 
-        static std::unordered_map<u32, u32> m_bufferIndex;
+        static std::unordered_map<grm::u32, grm::u32> m_bufferIndex;
     };
 } // namespace grr

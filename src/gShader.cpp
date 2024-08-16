@@ -23,7 +23,7 @@ namespace grr {
         shader->m_id = GL_CALL(glCreateProgram());
         
         // Create Fragment shader object
-        u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
+        grm::u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
         GL_CALL(glShaderSource(fragmentShaderID, NELEMS(fragments), fragments, nullptr));
         GL_CALL(glCompileShader(fragmentShaderID));
         if (gShader::checkerrors(fragmentShaderID, true)) {
@@ -35,7 +35,7 @@ namespace grr {
         }
 
         // Create vertex shader object
-        u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
+        grm::u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
         GL_CALL(glShaderSource(vertexShaderID, NELEMS(vertex), vertex, nullptr));
         GL_CALL(glCompileShader(vertexShaderID));
         if (gShader::checkerrors(vertexShaderID, true)) {
@@ -73,7 +73,7 @@ namespace grr {
         shader->m_id = GL_CALL(glCreateProgram());
         
         // Create Fragment shader object
-        u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
+        grm::u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
         GL_CALL(glShaderSource(fragmentShaderID, NELEMS(fragments), fragments, nullptr));
         GL_CALL(glCompileShader(fragmentShaderID));
         if (gShader::checkerrors(fragmentShaderID, true)) {
@@ -85,7 +85,7 @@ namespace grr {
         }
 
         // Create vertex shader object
-        u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
+        grm::u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
         GL_CALL(glShaderSource(vertexShaderID, NELEMS(vertex), vertex, nullptr));
         GL_CALL(glCompileShader(vertexShaderID));
         if (gShader::checkerrors(vertexShaderID, true)) {
@@ -131,7 +131,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u16 count, const Matrix4x4& data) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const Matrix4x4& data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, data.data));
@@ -141,7 +141,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u16 count, const Vector3& data) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const Vector3& data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform3fv(it->second, static_cast<GLsizei>(count), data.data));
@@ -151,7 +151,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u16 count, const int *value) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const int *value) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform1iv(it->second, static_cast<GLsizei>(count), static_cast<const GLint*>(value)));
@@ -161,7 +161,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u16 count, const Matrix4x4 *value) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const Matrix4x4 *value) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, reinterpret_cast<const GLfloat *>(value)));
@@ -171,7 +171,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, u16 count, const gColor& data) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const gColor& data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform4fv(it->second, static_cast<GLsizei>(count), data.data));
@@ -234,7 +234,7 @@ namespace grr {
         gShader::m_instance = nullptr;
     }
 
-    const bool gShader::checkerrors(u32 shader, bool compile) {
+    const bool gShader::checkerrors(grm::u32 shader, bool compile) {
         GLint status;
         if (compile) {
             GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &status));
