@@ -9,9 +9,9 @@ namespace grr {
 
         static void Bind(grm::u32 id);
 
-        static void SetRenderbuffer(FramebufferType attachment, grm::u32 id);
+        static void SetRenderbuffer(gFramebufferFlags attachment);
 
-        static void SetTexture(FramebufferType attachment, grm::u32 id);
+        static void SetTexture(gFramebufferFlags attachment);
 
         static void Unbind();
 
@@ -19,7 +19,7 @@ namespace grr {
     private:
         static grm::u32 s_current;
 
-        static std::unordered_map<FramebufferType, grm::u32> m_apiFramebuffer;
+        static std::unordered_map<gFramebufferFlags, grm::u32> m_apiFramebuffer;
     };
 
 } // namespace grr

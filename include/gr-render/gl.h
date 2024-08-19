@@ -13,7 +13,7 @@ namespace grr {
 
     void check_erros_opengl(const std::string &name, const std::string & file);
 
-    #define L " Line: " + std::to_string(__LINE__) + " - File: " + std::string(__FILE__) + ")"
+    #define FIX std::string(__FILE__ "(" + std::to_string(__LINE__) + ") :")
 
-    #define GL_CALL(func) func; check_erros_opengl(#func, L)
+    #define GL_CALL(func) func; check_erros_opengl(#func, FIX)
 }

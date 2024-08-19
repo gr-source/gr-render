@@ -75,9 +75,14 @@ namespace grr {
         TextureFormat_RGBA8888 = 1 << 10
     };
 
-    enum gTextureFlags {
+    enum gTextureFlags : grm::u32 {
         gTextureFlags_None = 1 << 0,
         gTextureFlags_MipMaps = 1 << 1,
+        gTextureFlags_Texture = 1 << 2,
+        gTextureFlags_Cubemap = 1 << 3,
+        gTextureFlags_Filter_Linear = 1 << 4,
+        gTextureFlags_Filter_Trilinear = 1 << 5,
+        gTextureFlags_Filter_Bilinear = 1 << 6,
     };
 
     enum BufferType : grm::u32 {
@@ -96,14 +101,20 @@ namespace grr {
         PrimitiveType_TriangleFan = 6
     };
 
-    enum FramebufferType {
-        FramebufferType_Color_Attachiment0 = 1 << 0,
-        FramebufferType_Color_Attachiment1 = 1 << 1,
-        FramebufferType_Color_Attachiment2 = 1 << 2,
-        FramebufferType_Color_Attachiment3 = 1 << 3,
-        FramebufferType_Color_Attachiment4 = 1 << 4,
-        FramebufferType_Color_Attachiment5 = 1 << 5,
-        FramebufferType_Depth_Attachiment  = 1 << 7,
+    enum gFramebufferFlags : grm::u32 {
+        gFramebufferFlags_Color_Attachiment0 = 1 << 0,
+        gFramebufferFlags_Color_Attachiment1 = 1 << 1,
+        gFramebufferFlags_Color_Attachiment2 = 1 << 2,
+        gFramebufferFlags_Color_Attachiment3 = 1 << 3,
+        gFramebufferFlags_Color_Attachiment4 = 1 << 4,
+        gFramebufferFlags_Color_Attachiment5 = 1 << 5,
+        gFramebufferFlags_Depth_Attachiment  = 1 << 7,
+        gFramebufferFlags_Cube_Map_Positive_X  = 1 << 8,
+        gFramebufferFlags_Cube_Map_Negative_X  = 1 << 9,
+        gFramebufferFlags_Cube_Map_Positive_Y  = 1 << 10,
+        gFramebufferFlags_Cube_Map_Negative_Y  = 1 << 11,
+        gFramebufferFlags_Cube_Map_Positive_Z  = 1 << 12,
+        gFramebufferFlags_Cube_Map_Negative_Z  = 1 << 13,
     };
 
     enum RenderbufferType {

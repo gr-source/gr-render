@@ -46,4 +46,8 @@ namespace grr {
         GL_CALL(glDeleteRenderbuffers(1, &id));
     }
 
+    grm::u32 &gRenderbuffer::GetCurrent() {
+        return s_current;
+    }
+
 } // namespace grr

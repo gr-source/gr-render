@@ -15,6 +15,8 @@ namespace grr {
 
         static void Destoy(grm::u32 id);
 
+        static grm::u32 &GetCurrent();
+
     private:
         static grm::u32 s_current;
 
