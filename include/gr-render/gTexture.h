@@ -7,7 +7,7 @@ namespace grr {
     public:
         static gTexture* Create(grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void* pixels);
 
-        static void PushTexture(gTexture *texture, grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void* pixels);
+        static void UpdateTexture(gTexture *texture, grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void* pixels);
 
         static void Bind(const gTexture *texture, int idx);
 
@@ -15,10 +15,6 @@ namespace grr {
 
         gTexture();
         ~gTexture();
-
-        void bind(int texture = 0);
-
-        void unbind();
 
         const grm::u32& getID() const;
 

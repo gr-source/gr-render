@@ -11,12 +11,12 @@ namespace grr {
     gTexture *gTexture::Create(grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void *pixels) {
         gTexture* texture = new gTexture();
         
-        PushTexture(texture, width, height, flags, format, pixels);
+        UpdateTexture(texture, width, height, flags, format, pixels);
 
         return texture;
     }
 
-    void gTexture::PushTexture(gTexture *texture, grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void *pixels) {
+    void gTexture::UpdateTexture(gTexture *texture, grm::u32 width, grm::u32 height, gTextureFlags flags, TextureFormat format, void *pixels) {
         texture->m_height = height;
         texture->m_width = width;
         texture->m_format = format;
@@ -79,10 +79,11 @@ namespace grr {
     }
 
     void gTexture::Bind(const gTexture *texture, int idx) {
-        GR_ASSERT(texture || texture->isValid());
-
         GL_CALL(glActiveTexture(GL_TEXTURE0 + idx));
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, texture->m_index));
+
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
+        if (texture)
+            GL_CALL(glBindTexture(GL_TEXTURE_2D, texture->m_index));
     }
 
     void gTexture::Unbind() {
@@ -96,11 +97,6 @@ namespace grr {
         if (m_index) {
             glDeleteTextures(1, &m_index);
         }
-    }
-
-    void gTexture::bind(int texture) {
-        GL_CALL(glActiveTexture(GL_TEXTURE0 + texture));
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, m_index));
     }
 
     const grm::u32& gTexture::getID() const {
