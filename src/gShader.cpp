@@ -10,7 +10,7 @@ extern std::string m_error;
 namespace grr {
     gShader* gShader::m_instance = nullptr;
 
-    gShader::gShader() : m_id(0) {}
+    gShader::gShader() : m_id(0), m_bValid(false) {}
 
     gShader::~gShader() {
         if (m_id) {
@@ -20,57 +20,20 @@ namespace grr {
 
     gShader *gShader::Create(const char **fragments, const char **vertex) {
         gShader* shader = new gShader();
-        shader->m_id = GL_CALL(glCreateProgram());
-        
-        // Create Fragment shader object
-        grm::u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
-        GL_CALL(glShaderSource(fragmentShaderID, NELEMS(fragments), fragments, nullptr));
-        GL_CALL(glCompileShader(fragmentShaderID));
-        if (gShader::checkerrors(fragmentShaderID, true)) {
-            GL_CALL(glDeleteShader(fragmentShaderID));
 
-            delete shader;
-
-            return nullptr;
-        }
-
-        // Create vertex shader object
-        grm::u32 vertexShaderID = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
-        GL_CALL(glShaderSource(vertexShaderID, NELEMS(vertex), vertex, nullptr));
-        GL_CALL(glCompileShader(vertexShaderID));
-        if (gShader::checkerrors(vertexShaderID, true)) {
-            GL_CALL(glDeleteShader(fragmentShaderID));
-            GL_CALL(glDeleteShader(vertexShaderID));
-
-            delete shader;
-
-            return nullptr;
-        }
-
-        // attach shader object in to program
-        GL_CALL(glAttachShader(shader->m_id, fragmentShaderID));
-        GL_CALL(glAttachShader(shader->m_id, vertexShaderID));
-
-        // link shaders object in program
-        GL_CALL(glLinkProgram(shader->m_id));
-        if (gShader::checkerrors(shader->m_id, false)) {
-            GL_CALL(glDeleteShader(fragmentShaderID));
-            GL_CALL(glDeleteShader(vertexShaderID));
-
-            delete shader;
-
-            return nullptr;
-        }
-
-        // clean shader object
-        GL_CALL(glDeleteShader(fragmentShaderID));
-        GL_CALL(glDeleteShader(vertexShaderID));
+        gShader::Bind(shader);
+        gShader::SetupShader(fragments, vertex);
+        gShader::Unbind();
 
         return shader;
     }
 
-    void gShader::Create(gShader *shader, const char **fragments, const char **vertex) {
-        shader->m_id = GL_CALL(glCreateProgram());
+    void gShader::SetupShader(const char **fragments, const char **vertex) {
+        auto shader = GetCurrent();
+        assert(shader || fragments || vertex);
+
+        if (!shader->isValid())
+            shader->m_id = GL_CALL(glCreateProgram());
         
         // Create Fragment shader object
         grm::u32 fragmentShaderID = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
@@ -78,9 +41,6 @@ namespace grr {
         GL_CALL(glCompileShader(fragmentShaderID));
         if (gShader::checkerrors(fragmentShaderID, true)) {
             GL_CALL(glDeleteShader(fragmentShaderID));
-
-            delete shader;
-
             return;
         }
 
@@ -91,9 +51,6 @@ namespace grr {
         if (gShader::checkerrors(vertexShaderID, true)) {
             GL_CALL(glDeleteShader(fragmentShaderID));
             GL_CALL(glDeleteShader(vertexShaderID));
-
-            delete shader;
-
             return;
         }
 
@@ -107,14 +64,24 @@ namespace grr {
             GL_CALL(glDeleteShader(fragmentShaderID));
             GL_CALL(glDeleteShader(vertexShaderID));
 
-            delete shader;
-
             return;
         }
 
         // clean shader object
         GL_CALL(glDeleteShader(fragmentShaderID));
         GL_CALL(glDeleteShader(vertexShaderID));
+
+        shader->m_bValid = true;
+    }
+    
+    void gShader::Bind(gShader *shader) {
+        GL_CALL(glUseProgram(shader->m_id));
+        gShader::m_instance = shader;
+    }
+
+    void gShader::Unbind() {
+        GL_CALL(glUseProgram(0));
+        gShader::m_instance = nullptr;
     }
 
     gShader *gShader::GetCurrent() {
@@ -220,18 +187,8 @@ namespace grr {
         }
     }
 
-    const bool gShader::isValid() const {
-        return m_id != 0;
-    }
-
-    void gShader::bind() {
-        GL_CALL(glUseProgram(m_id));
-        gShader::m_instance = this;
-    }
-
-    void gShader::unbind() {
-        GL_CALL(glUseProgram(0));
-        gShader::m_instance = nullptr;
+    bool gShader::isValid() const {
+        return m_bValid && m_id;
     }
 
     const bool gShader::checkerrors(grm::u32 shader, bool compile) {

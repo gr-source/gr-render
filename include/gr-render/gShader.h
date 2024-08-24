@@ -10,7 +10,11 @@ namespace grr {
 
         static gShader *Create(const char **fragments, const char **vertex);
 
-        static void Create(gShader *shader, const char **fragments, const char **vertex);
+        static void SetupShader(const char **fragments, const char **vertex);
+
+        static void Bind(gShader *shader);
+
+        static void Unbind();
 
         static gShader* GetCurrent();
 
@@ -25,16 +29,14 @@ namespace grr {
         template <typename T>
         static void SetUniform(const std::string& name, T data);
 
-        const bool isValid() const;
-
-        void bind();
-
-        void unbind();
+        bool isValid() const;
 
     private:
+        std::unordered_map<std::string, grm::u32> m_uniformMap;
+
         grm::u32 m_id;
 
-        std::unordered_map<std::string, grm::u32> m_uniformMap;
+        bool m_bValid;
 
         static gShader* m_instance;
 

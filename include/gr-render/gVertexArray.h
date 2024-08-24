@@ -18,17 +18,22 @@ namespace grr {
         static void Bind(grm::u32 index);
 
         static void SetAttrib(grm::u8 index, grm::u16 size, grm::u16 stride, const void* pointer);
+
         static void SetAttribI(grm::u8 index, grm::u16 size, grm::u16 stride, const void* pointer);
+
+        static void SetAttribDivisor(grm::u8 index, grm::u8 divisor);
 
         static void UpdateResize(grm::u32 size);
 
         static void SetBufferUpdate(grm::u32 offset, grm::u32 size, const void* data);
 
-        static void DrawElementsInstanced(PrimitiveType primitive, grm::u32 count, const void* indices, grm::u32 primcount);
-
         static void DrawElements(PrimitiveType primitive, grm::u32 count, const void* indices);
 
+        static void DrawElementsInstanced(PrimitiveType primitive, grm::u32 count, const void* indices, grm::u32 primcount);
+
         static void DrawArrays(PrimitiveType primitive, grm::u32 count);
+
+        static void DrawArraysInstanced(PrimitiveType primitive, grm::u32 count, grm::u32 primcount);
 
         void bind();
 

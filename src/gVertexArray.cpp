@@ -74,6 +74,10 @@ namespace grr {
         GL_CALL(glEnableVertexAttribArray(static_cast<GLuint>(index)));
     }
 
+    void gVertexArray::SetAttribDivisor(grm::u8 index, grm::u8 divisor) {
+        GL_CALL(glVertexAttribDivisor(static_cast<GLuint>(index), divisor));
+    }
+
     void gVertexArray::UpdateResize(grm::u32 size) {
         int arraySize = 0;
         GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
@@ -99,6 +103,10 @@ namespace grr {
 
     void gVertexArray::DrawArrays(PrimitiveType primitive, grm::u32 count) {
         GL_CALL(glDrawArrays(m_primitiveMap[primitive], 0, count));
+    }
+
+    void gVertexArray::DrawArraysInstanced(PrimitiveType primitive, grm::u32 count, grm::u32 primcount) {
+        glDrawArraysInstanced(m_primitiveMap[primitive], 0, count, primcount);
     }
 
     void gVertexArray::bind() {
