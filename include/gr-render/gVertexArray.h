@@ -40,6 +40,10 @@ namespace grr {
         void unbind();
 
         void destroy();
+
+        bool isValid() const;
+
+        grm::u32 getID() const;
     private:
         grm::u32 m_vao;
 

@@ -3,7 +3,7 @@
 #include "gl.h"
 
 namespace grr {
-    gVertexArray::gVertexArray() : m_vao(-1) {}
+    gVertexArray::gVertexArray() : m_vao(0) {}
 
     gVertexArray* gVertexArray::m_instance = nullptr;
 
@@ -127,7 +127,12 @@ namespace grr {
         }
         delete this;
     }
+
+    bool gVertexArray::isValid() const {
+        return m_vao;
+    }
+    
+    grm::u32 gVertexArray::getID() const {
+        return m_vao;
+    }
 } // namespace grr
-
-
-
