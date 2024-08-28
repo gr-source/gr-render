@@ -42,6 +42,7 @@ namespace grr {
             std::cout << "falied to create buffers" << std::endl;
             return 0;
         }
+
         GL_CALL(glBindBuffer(m_bufferTypeMap[target], m_index));
 
         m_bufferIndex.emplace(m_index, m_bufferTypeMap[target]);
@@ -51,11 +52,12 @@ namespace grr {
 
     void gVertexArray::DeleteBuffer(grm::u32 index) {
         auto it = m_bufferIndex.find(index);
-        if (it != m_bufferIndex.end()) {
-            GL_CALL(glDeleteBuffers(1, &index));
-
-            m_bufferIndex.erase(it);
+        if (it == m_bufferIndex.end()) {
+            return;
         }
+        GL_CALL(glDeleteBuffers(1, &index));
+
+        m_bufferIndex.erase(it);
     }
 
     void gVertexArray::Bind(grm::u32 index) {
@@ -78,12 +80,26 @@ namespace grr {
         GL_CALL(glVertexAttribDivisor(static_cast<GLuint>(index), divisor));
     }
 
-    void gVertexArray::UpdateResize(grm::u32 size) {
+    void gVertexArray::UpdateResizeBuffer(grm::u32 size, grm::u32 flags) {
         int arraySize = 0;
         GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
+
+        GLenum usage;
+
+        switch (flags) {
+        case gBufferFlags_Static:
+            usage = GL_STATIC_DRAW;
+            break;
+        case gBufferFlags_Dynamic:
+            usage = GL_DYNAMIC_DRAW;
+            break;
+        default:
+            GR_ASSERT("Invalid.");
+            break;
+        }
         
         while (size != arraySize) {
-            GL_CALL(glBufferData(s_currentBuffer, size, nullptr, GL_STATIC_DRAW));
+            GL_CALL(glBufferData(s_currentBuffer, size, nullptr, usage));
 
             GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         }

@@ -91,6 +91,11 @@ namespace grr {
         BufferType_PBO = 1 << 1  // Primitive Buffer Object
     };
 
+    enum gBufferFlags : grm::u32 {
+        gBufferFlags_Static = 1 << 1,
+        gBufferFlags_Dynamic = 1 << 2,
+    };
+
     enum PrimitiveType {
         PrimitiveType_Points = 0,
         PrimitiveType_Lines = 1,
