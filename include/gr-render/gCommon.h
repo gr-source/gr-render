@@ -76,13 +76,22 @@ namespace grr {
     };
 
     enum gTextureFlags : grm::u32 {
-        gTextureFlags_None = 1 << 0,
-        gTextureFlags_MipMaps = 1 << 1,
-        gTextureFlags_Texture = 1 << 2,
-        gTextureFlags_Cubemap = 1 << 3,
-        gTextureFlags_Filter_Linear = 1 << 4,
-        gTextureFlags_Filter_Trilinear = 1 << 5,
-        gTextureFlags_Filter_Bilinear = 1 << 6,
+        gTextureFlags_None                = 1 << 0,
+        gTextureFlags_MipMaps             = 1 << 1,
+        gTextureFlags_Texture             = 1 << 2,
+        gTextureFlags_Cubemap             = 1 << 3,
+        gTextureFlags_Filter_Linear       = 1 << 4,
+        gTextureFlags_Filter_Trilinear    = 1 << 5,
+        gTextureFlags_Filter_Bilinear     = 1 << 6,
+        gTextureFlags_Cubemap_Positive_X  = 1 << 7,
+        gTextureFlags_Cubemap_Negative_X  = 1 << 8,
+        gTextureFlags_Cubemap_Positive_Y  = 1 << 9,
+        gTextureFlags_Cubemap_Negative_Y  = 1 << 10,
+        gTextureFlags_Cubemap_Positive_Z  = 1 << 11,
+        gTextureFlags_Cubemap_Negative_Z  = 1 << 12,
+        gTextureFlags_Clamp_Repeat        = 1 << 14,
+        gTextureFlags_Clamp_Border        = 1 << 15,
+        gTextureFlags_Clamp_Edge        = 1 << 16,
     };
 
     enum BufferType : grm::u32 {
@@ -114,12 +123,14 @@ namespace grr {
         gFramebufferFlags_Color_Attachiment4 = 1 << 4,
         gFramebufferFlags_Color_Attachiment5 = 1 << 5,
         gFramebufferFlags_Depth_Attachiment  = 1 << 7,
-        gFramebufferFlags_Cube_Map_Positive_X  = 1 << 8,
-        gFramebufferFlags_Cube_Map_Negative_X  = 1 << 9,
-        gFramebufferFlags_Cube_Map_Positive_Y  = 1 << 10,
-        gFramebufferFlags_Cube_Map_Negative_Y  = 1 << 11,
-        gFramebufferFlags_Cube_Map_Positive_Z  = 1 << 12,
-        gFramebufferFlags_Cube_Map_Negative_Z  = 1 << 13,
+        gFramebufferFlags_Cubemap_Positive_X  = 1 << 8,
+        gFramebufferFlags_Cubemap_Negative_X  = 1 << 9,
+        gFramebufferFlags_Cubemap_Positive_Y  = 1 << 10,
+        gFramebufferFlags_Cubemap_Negative_Y  = 1 << 11,
+        gFramebufferFlags_Cubemap_Positive_Z  = 1 << 12,
+        gFramebufferFlags_Cubemap_Negative_Z  = 1 << 13,
+        gFramebufferFlags_Cubemap             = 1 << 14,
+        gFramebufferFlags_Texture             = 1 << 15,
     };
 
     enum RenderbufferType {

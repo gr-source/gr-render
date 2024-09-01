@@ -11,7 +11,7 @@ namespace grr {
 
         static void SetRenderbuffer(gFramebufferFlags attachment);
 
-        static void SetTexture(gFramebufferFlags attachment);
+        static void SetTexture(gFramebufferFlags attachment, gFramebufferFlags textarget = gFramebufferFlags_Texture);
 
         static void Unbind();
 
