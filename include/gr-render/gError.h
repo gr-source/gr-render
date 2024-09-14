@@ -4,9 +4,7 @@
 
 namespace grr {
     struct gError {
-        static const std::string &GetError();
-
-        static void Clean();
+        static std::string GetError();
     };
     
 } // namespace grr

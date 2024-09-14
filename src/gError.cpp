@@ -2,10 +2,9 @@
 
 std::string m_error;
 
-const std::string & grr::gError::GetError() {
+std::string grr::gError::GetError() {
+    auto temp = m_error;
+    m_error.clear();
     return m_error;
 }
 
-void grr::gError::Clean() {
-    m_error.clear();
-}

@@ -24,6 +24,8 @@ namespace grr {
         
         grm::u32 getTargetTexture();
 
+        static void Release();
+
     private:
         static std::unordered_map<grm::u32, grm::u32> m_textureMap;
         

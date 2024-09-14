@@ -1,12 +1,6 @@
 #pragma once
 
-#include "gColor.h"
-
-#include "gFramebuffer.h"
-#include "gVertexArray.h"
-#include "gTexture.h"
-#include "gShader.h"
-#include "gError.h"
+#include "gCommon.h"
 
 #include <sstream>
 #include <iomanip>
@@ -22,13 +16,14 @@ namespace grr {
 
         static void SetRenderState(RenderState state, grm::u32 value);
 
-        static const std::string getRenderStateName(RenderState state);
+        static std::string getRenderStateName(RenderState state);
 
-        static const bool Initialize();
+        static bool Initialize();
+
+        static void Release();
+
     private:
         static std::unordered_map<BufferBindingTarget, grm::u32> m_bufferMap;
-
-        static std::unordered_map<PrimitiveType, grm::u32> m_primitiveMap;
 
         static std::unordered_map<grm::u32, grm::u32> m_renderStateMap;
 

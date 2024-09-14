@@ -150,4 +150,10 @@ namespace grr {
     grm::u32 gTexture::getTargetTexture() {
         return m_flags & gTextureFlags_Cubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
     }
+
+    void gTexture::Release() {
+        s_current = nullptr;
+
+        m_textureMap.clear();
+    }
 } // namespace gr

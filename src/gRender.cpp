@@ -1,12 +1,13 @@
 #include "gRender.h"
 
-#include "gShaderSource.h"
+#include "gColor.h"
+
+#include "gFramebuffer.h"
 #include "gVertexArray.h"
 #include "gTexture.h"
 #include "gShader.h"
-#include "gl.h" 
-
-#include "gColor.h"
+#include "gError.h"
+#include "gl.h"
 
 namespace grr {
     std::unordered_map<BufferBindingTarget, grm::u32> gRender::m_bufferMap {
@@ -111,7 +112,7 @@ namespace grr {
         }
     }
 
-    const std::string gRender::getRenderStateName(RenderState state) {
+    std::string gRender::getRenderStateName(RenderState state) {
         #define GET_ENUM_NAME(e) case e: return #e
         switch (state) {
         GET_ENUM_NAME(GR_FALSE);
@@ -132,7 +133,7 @@ namespace grr {
         #undef GET_ENUM_NAME
     }
 
-    const bool gRender::Initialize() {
+    bool gRender::Initialize() {
         #if !GR_OPENGLES3
         if (glewInit() != GLEW_OK) {
             return false;
@@ -140,6 +141,22 @@ namespace grr {
         #endif
         return true;
     }
+
+    void gRender::Release() {
+        m_bufferMap.clear();
+
+        m_renderStateMap.clear();
+
+        gFramebuffer::Release();
+
+        gRenderbuffer::Release();
+
+        gTexture::Release();
+
+        gVertexArray::Release();
+    }
+
+    // void gRender::GetPixelData() {
+    //     glReadPixels()
+    // }
 }
-
-

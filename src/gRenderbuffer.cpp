@@ -50,4 +50,10 @@ namespace grr {
         return s_current;
     }
 
+    void gRenderbuffer::Release() {
+        s_current = 0;
+
+        s_renderbufferApi.clear();
+    }
+
 } // namespace grr

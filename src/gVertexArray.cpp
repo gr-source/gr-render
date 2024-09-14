@@ -151,4 +151,16 @@ namespace grr {
     grm::u32 gVertexArray::getID() const {
         return m_vao;
     }
+    
+    void gVertexArray::Release() {
+        m_instance = nullptr;
+
+        s_currentBuffer = 0;
+
+        m_bufferTypeMap.clear();
+
+        m_primitiveMap.clear();
+
+        m_bufferIndex.clear();
+    }
 } // namespace grr

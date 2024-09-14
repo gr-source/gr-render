@@ -44,6 +44,9 @@ namespace grr {
         bool isValid() const;
 
         grm::u32 getID() const;
+
+        static void Release();
+        
     private:
         grm::u32 m_vao;
 

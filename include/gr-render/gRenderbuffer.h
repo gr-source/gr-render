@@ -17,6 +17,8 @@ namespace grr {
 
         static grm::u32 &GetCurrent();
 
+        static void Release();
+
     private:
         static grm::u32 s_current;
 
