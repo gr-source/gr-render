@@ -2,12 +2,6 @@
 
 #include "gCommon.h"
 
-#include <sstream>
-#include <iomanip>
-#include <string>
-
-#define MAX_BLOCK_BUFFER 1024
-
 namespace grr {
     class gRender {
     public:
@@ -26,6 +20,5 @@ namespace grr {
         static std::unordered_map<BufferBindingTarget, grm::u32> m_bufferMap;
 
         static std::unordered_map<grm::u32, grm::u32> m_renderStateMap;
-
     };
 }

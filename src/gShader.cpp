@@ -1,14 +1,13 @@
 #include "gShader.h"
 
 #include "gl.h"
-#include "gColor.h"
 
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
-extern std::string m_error;
+extern std::ostringstream m_error;
 
 namespace grr {
-    gShader* gShader::m_instance = nullptr;
+    gShader *gShader::m_instance = nullptr;
 
     gShader::gShader() : m_id(0), m_bValid(false) {}
 
@@ -88,13 +87,14 @@ namespace grr {
         return gShader::m_instance;
     }
 
-    void gShader::Register(const std::string &name) {
-        GLint location = GL_CALL(glGetUniformLocation(m_instance->m_id, name.c_str()));
-        if (location != -1) {
-            m_instance->m_uniformMap[name] = location;
-        } else {
-            std::cout << "Uniform do not search: " << name << std::endl;
+    bool gShader::Register(const std::string &name) {
+        auto location = GL_CALL(glGetUniformLocation(m_instance->m_id, name.c_str()));
+        if (location == -1) {
+            m_error << "Uniform do not found: " << name << std::endl;
+            return false;
         }
+        m_instance->m_uniformMap[name] = location;
+        return true;
     }
 
     template <>
@@ -138,7 +138,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const gColor& data) {
+    void gShader::SetUniform(const std::string& name, grm::u16 count, const Color& data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform4fv(it->second, static_cast<GLsizei>(count), data.data));
@@ -178,7 +178,7 @@ namespace grr {
     }
 
     template <>
-    void gShader::SetUniform(const std::string& name, gColor data) {
+    void gShader::SetUniform(const std::string& name, Color data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
             GL_CALL(glUniform4fv(it->second, 1, reinterpret_cast<const GLfloat*>(data.data)));
@@ -187,7 +187,12 @@ namespace grr {
         }
     }
 
-    bool gShader::isValid() const {
+    bool gShader::HasUniform(const std::string &name) {
+        return m_instance->m_uniformMap.find(name) != m_instance->m_uniformMap.end();
+    }
+
+    bool gShader::isValid() const
+    {
         return m_bValid && m_id;
     }
 
@@ -207,20 +212,20 @@ namespace grr {
             std::string logMessage(length, '\0');
             GL_CALL(glGetShaderInfoLog(shader, logMessage.size(), nullptr, logMessage.data()));
 
-            m_error += "================================\n";
-            m_error += "Failed to compile shader - ";
+            m_error << "================================" << std::endl;
+            m_error << "Failed to compile shader - ";
             switch (type) {
             case GL_FRAGMENT_SHADER:
-                m_error += ".frag\n\n";
+                m_error << ".frag" << std::endl << std::endl;
                 break;
             case GL_VERTEX_SHADER:
-                m_error += ".vert\n\n";
+                m_error << ".vert" << std::endl << std::endl;
                 break;
             default:
                 break;
             }
-            m_error += logMessage + "\n";
-            m_error += "================================\n";
+            m_error << logMessage << std::endl;
+            m_error << "================================" << std::endl;
             return true;
         }
 
@@ -231,8 +236,8 @@ namespace grr {
         std::string logMessage(512, '\0');
 
         GL_CALL(glGetProgramInfoLog(shader, logMessage.size(), nullptr, logMessage.data()));
-        m_error += "Failed to link shader program - \n\n";
-        m_error += logMessage + '\n';
+        m_error << "Failed to link shader program:" << std::endl << std::endl;
+        m_error << logMessage << std::endl;
         return true;
     }
 } // namespace grr

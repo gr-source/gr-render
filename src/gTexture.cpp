@@ -139,11 +139,11 @@ namespace grr {
         }
     }
 
-    const grm::u32& gTexture::getID() const {
+    grm::u32 gTexture::getID() const {
         return m_index;
     }
 
-    const bool gTexture::isValid() const {
+    bool gTexture::isValid() const {
         return m_index != 0;
     }
 

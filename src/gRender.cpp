@@ -1,7 +1,5 @@
 #include "gRender.h"
 
-#include "gColor.h"
-
 #include "gFramebuffer.h"
 #include "gVertexArray.h"
 #include "gTexture.h"
@@ -31,7 +29,7 @@ namespace grr {
     void gRender::SetRenderState(RenderState state, void *value) {
         switch (state) {
         case GR_BACKGROUND_COLOR: {
-            gColor* color = (gColor*)value;
+            auto color = reinterpret_cast<Color *>(value);
             GL_CALL(glClearColor(color->r, color->g, color->b, color->a));
             break;
         }

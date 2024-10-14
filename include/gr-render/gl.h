@@ -8,6 +8,8 @@
 #include <GL/glew.h>
 #endif
 
+#include <sstream>
+
 namespace grr {
     const char* get_enum_name(GLenum err);
 

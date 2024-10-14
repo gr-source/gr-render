@@ -8,8 +8,9 @@ namespace grr {
     class gVertexArray {
     public:
         gVertexArray();
+        ~gVertexArray();
         
-        static gVertexArray* Create();
+        static gVertexArray *Create();
 
         static grm::u32 CreateBuffer(BufferType target);
 
@@ -39,18 +40,16 @@ namespace grr {
 
         void unbind();
 
-        void destroy();
-
         bool isValid() const;
 
         grm::u32 getID() const;
 
         static void Release();
+
+        static void Destroy(gVertexArray *target);
         
     private:
-        grm::u32 m_vao;
-
-        static gVertexArray* m_instance;
+        static gVertexArray *m_instance;
 
         static grm::u32 s_currentBuffer;
 
@@ -59,5 +58,7 @@ namespace grr {
         static std::unordered_map<PrimitiveType, grm::u32> m_primitiveMap;
 
         static std::unordered_map<grm::u32, grm::u32> m_bufferIndex;
+
+        grm::u32 m_vao;
     };
 } // namespace grr

@@ -5,7 +5,13 @@
 namespace grr {
     gVertexArray::gVertexArray() : m_vao(0) {}
 
-    gVertexArray* gVertexArray::m_instance = nullptr;
+    gVertexArray::~gVertexArray() {
+        if (m_vao) {
+            glDeleteVertexArrays(1, &m_vao);
+        }
+    }
+
+    gVertexArray *gVertexArray::m_instance = nullptr;
 
     grm::u32 gVertexArray::s_currentBuffer = 0;
 
@@ -137,13 +143,6 @@ namespace grr {
         m_instance = nullptr;
     }
 
-    void gVertexArray::destroy() {
-        if (m_vao != -1) {
-            GL_CALL(glDeleteVertexArrays(1, &m_vao));
-        }
-        delete this;
-    }
-
     bool gVertexArray::isValid() const {
         return m_vao;
     }
@@ -162,5 +161,16 @@ namespace grr {
         m_primitiveMap.clear();
 
         m_bufferIndex.clear();
+    }
+
+    void gVertexArray::Destroy(gVertexArray *target) {
+        if (!target) {
+            return;
+        }
+
+        if (target->m_vao != -1) {
+            GL_CALL(glDeleteVertexArrays(1, &target->m_vao));
+        }
+        delete target;
     }
 } // namespace grr

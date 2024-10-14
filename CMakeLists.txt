@@ -21,7 +21,6 @@ set(render_src
 )
 
 set(render_hdr
-    include/${PROJECT_NAME}/gShaderSource.h
     include/${PROJECT_NAME}/gRenderbuffer.h
     include/${PROJECT_NAME}/gFramebuffer.h
     include/${PROJECT_NAME}/gVertexArray.h
@@ -29,7 +28,6 @@ set(render_hdr
     include/${PROJECT_NAME}/gRender.h
     include/${PROJECT_NAME}/gShader.h
     include/${PROJECT_NAME}/gCommon.h
-    include/${PROJECT_NAME}/gColor.h
     include/${PROJECT_NAME}/gError.h
 )
 

@@ -18,7 +18,7 @@ namespace grr {
 
         static gShader* GetCurrent();
 
-        static void Register(const std::string& name);
+        static bool Register(const std::string& name);
 
         template <typename T>
         static void SetUniform(const std::string& name, grm::u16 count, const T& data);
@@ -28,6 +28,8 @@ namespace grr {
 
         template <typename T>
         static void SetUniform(const std::string& name, T data);
+
+        static bool HasUniform(const std::string &name);
 
         bool isValid() const;
 

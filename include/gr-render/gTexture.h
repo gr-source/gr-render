@@ -18,9 +18,9 @@ namespace grr {
         gTexture();
         ~gTexture();
 
-        const grm::u32& getID() const;
+        grm::u32 getID() const;
 
-        const bool isValid() const;
+        bool isValid() const;
         
         grm::u32 getTargetTexture();
 
