@@ -101,7 +101,7 @@ namespace grr {
     void gShader::SetUniform(const std::string& name, grm::u16 count, const Matrix4x4& data) {
         auto it = m_instance->m_uniformMap.find(name);
         if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, data.data));
+            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, data.getData()));
         } else {
             std::cout << "Invalid Uniform: " << name << std::endl;
         }
