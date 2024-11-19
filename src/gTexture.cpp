@@ -74,6 +74,9 @@ namespace grr {
         case TextureFormat_RGBA8888:
             GL_CALL(glTexImage2D(internalTarget, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
             break;
+        case TextureFormat_DepthComponent:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, pixels));
+            break;
         default:
             break;
         }

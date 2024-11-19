@@ -67,12 +67,15 @@ namespace grr {
     }
 
     void gFramebuffer::GetPixels(int x, int y, grm::u32 width, grm::u32 height, TextureFormat format, void *pixels) {
+        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, s_current));
+        GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
+
         switch (format) {
         case TextureFormat_SRGB:
             GL_CALL(glReadPixels(x, y, width, height, GL_SRGB, GL_UNSIGNED_BYTE, pixels));
             break;
         case TextureFormat_RGB:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels));
+            GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_FLOAT, pixels));
             break;
         case TextureFormat_RGB332:
             GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pixels));
@@ -98,9 +101,14 @@ namespace grr {
         case TextureFormat_RGBA8888:
             GL_CALL(glReadPixels(x, y, width, height, GL_RGBA8, GL_UNSIGNED_BYTE, pixels));
             break;
+        case TextureFormat_DepthComponent:
+            GL_CALL(glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels));
+            break;
         default:
             break;
         }
+        GL_CALL(glReadBuffer(GL_NONE));
+        GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, 0));
     }
 
     void gFramebuffer::Release() {

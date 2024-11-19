@@ -18,7 +18,7 @@ namespace grr {
     class gRender;
     class gShader;
 
-    enum RenderState : grm::u32 {
+    enum RenderState : grm::u64 {
         GR_FALSE               = 1 << 1,
         GR_TRUE                = 1 << 2,
         GR_BACKGROUND_COLOR    = 1 << 3,
@@ -45,7 +45,7 @@ namespace grr {
         GR_FRAMEBUFFER_SRGB    = 1 << 24,
         GR_BLEND               = 1 << 25,
         GR_SRC_ALPHA           = 1 << 26,
-        GR_ONE_MINUS_SRC_ALPHA = 1 << 27,
+        GR_ONE_MINUS_SRC_ALPHA = 1 << 27
     };
 
     enum BufferBindingTarget {
@@ -72,7 +72,8 @@ namespace grr {
         TextureFormat_SRGBA = 1 << 6,
         TextureFormat_RGBA = 1 << 8,
         TextureFormat_RGBA4444 = 1 << 9,
-        TextureFormat_RGBA8888 = 1 << 10
+        TextureFormat_RGBA8888 = 1 << 10,
+        TextureFormat_DepthComponent = 1 << 11
     };
 
     enum gTextureFlags : grm::u32 {
