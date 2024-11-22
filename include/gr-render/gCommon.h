@@ -10,6 +10,27 @@
 
 #define GR_ASSERT(msg) assert(false && msg)
 
+enum class BufferType {
+    VBO,
+    EBO,
+    PBO 
+};
+
+enum class BufferUsage {
+    STATIC,
+    DYNAMIC
+};
+
+enum class PrimitiveType {
+    POINTS,
+    LINES,
+    LINE_LOOP,
+    LINE_STRIP,
+    TRIANGLES,
+    TRIANGLES_STRIP,
+    TRIANGLES_FAN
+};
+
 namespace grr {
     class gRenderbuffer;
     class gVertexArray;
@@ -93,27 +114,6 @@ namespace grr {
         gTextureFlags_Clamp_Repeat        = 1 << 14,
         gTextureFlags_Clamp_Border        = 1 << 15,
         gTextureFlags_Clamp_Edge        = 1 << 16,
-    };
-
-    enum BufferType : grm::u32 {
-        BufferType_VBO = 1 << 1, // Vertex Buffer Object
-        BufferType_EBO = 1 << 2, // Element Buffer Object
-        BufferType_PBO = 1 << 1  // Primitive Buffer Object
-    };
-
-    enum gBufferFlags : grm::u32 {
-        gBufferFlags_Static = 1 << 1,
-        gBufferFlags_Dynamic = 1 << 2,
-    };
-
-    enum PrimitiveType {
-        PrimitiveType_Points = 0,
-        PrimitiveType_Lines = 1,
-        PrimitiveType_LineLoop = 2,
-        PrimitiveType_LineStrip = 3,
-        PrimitiveType_Triangles = 4,
-        PrimitiveType_TriangleStrip = 5,
-        PrimitiveType_TriangleFan = 6
     };
 
     enum gFramebufferFlags : grm::u32 {

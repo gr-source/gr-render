@@ -16,19 +16,19 @@ namespace grr {
     grm::u32 gVertexArray::s_currentBuffer = 0;
 
     std::unordered_map<BufferType, grm::u32> gVertexArray::m_bufferTypeMap {
-        {BufferType_VBO, GL_ARRAY_BUFFER},
-        {BufferType_PBO, GL_ARRAY_BUFFER},
-        {BufferType_EBO, GL_ELEMENT_ARRAY_BUFFER}
+        {BufferType::VBO, GL_ARRAY_BUFFER},
+        {BufferType::PBO, GL_ARRAY_BUFFER},
+        {BufferType::EBO, GL_ELEMENT_ARRAY_BUFFER}
     };
 
     std::unordered_map<PrimitiveType, grm::u32> gVertexArray::m_primitiveMap {
-        {PrimitiveType_Points, GL_POINTS},
-        {PrimitiveType_Lines, GL_LINES},
-        {PrimitiveType_LineLoop, GL_LINE_LOOP},
-        {PrimitiveType_LineStrip, GL_LINE_STRIP},
-        {PrimitiveType_Triangles, GL_TRIANGLES},
-        {PrimitiveType_TriangleStrip, GL_TRIANGLE_STRIP},
-        {PrimitiveType_TriangleFan, GL_TRIANGLE_FAN}
+        {PrimitiveType::POINTS, GL_POINTS},
+        {PrimitiveType::LINES, GL_LINES},
+        {PrimitiveType::LINE_LOOP, GL_LINE_LOOP},
+        {PrimitiveType::LINE_STRIP, GL_LINE_STRIP},
+        {PrimitiveType::TRIANGLES, GL_TRIANGLES},
+        {PrimitiveType::TRIANGLES_STRIP, GL_TRIANGLE_STRIP},
+        {PrimitiveType::TRIANGLES_FAN, GL_TRIANGLE_FAN}
     };
 
     std::unordered_map<grm::u32, grm::u32> gVertexArray::m_bufferIndex;
@@ -86,18 +86,18 @@ namespace grr {
         GL_CALL(glVertexAttribDivisor(static_cast<GLuint>(index), divisor));
     }
 
-    void gVertexArray::UpdateResizeBuffer(grm::u32 size, grm::u32 flags) {
+    void gVertexArray::UpdateResizeBuffer(grm::u32 size, BufferUsage usage) {
         int arraySize = 0;
         GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
 
-        GLenum usage;
+        GLenum num = 0;
 
-        switch (flags) {
-        case gBufferFlags_Static:
-            usage = GL_STATIC_DRAW;
+        switch (usage) {
+        case BufferUsage::STATIC:
+            num = GL_STATIC_DRAW;
             break;
-        case gBufferFlags_Dynamic:
-            usage = GL_DYNAMIC_DRAW;
+        case BufferUsage::DYNAMIC:
+            num = GL_DYNAMIC_DRAW;
             break;
         default:
             GR_ASSERT("Invalid.");
@@ -105,7 +105,7 @@ namespace grr {
         }
         
         while (size != arraySize) {
-            GL_CALL(glBufferData(s_currentBuffer, size, nullptr, usage));
+            GL_CALL(glBufferData(s_currentBuffer, size, nullptr, num));
 
             GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
         }

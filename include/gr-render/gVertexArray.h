@@ -24,7 +24,7 @@ namespace grr {
 
         static void SetAttribDivisor(grm::u8 index, grm::u8 divisor);
 
-        static void UpdateResizeBuffer(grm::u32 size, grm::u32 flags);
+        static void UpdateResizeBuffer(grm::u32 size, BufferUsage usage);
 
         static void SetBufferUpdate(grm::u32 offset, grm::u32 size, const void* data);
 
