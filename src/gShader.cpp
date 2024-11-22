@@ -2,6 +2,8 @@
 
 #include "gl.h"
 
+#include <cstring>
+
 #define NELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
 extern std::ostringstream m_error;
@@ -14,6 +16,13 @@ namespace grr {
     gShader::~gShader() {
         if (m_id) {
             GL_CALL(glDeleteProgram(m_id));
+        }
+
+        for (auto &&[name, uniform] : m_uniformMap) {
+            if (!uniform.data) {
+                continue;
+            }
+            std::free(uniform.data);
         }
     }
 
@@ -87,116 +96,120 @@ namespace grr {
         return gShader::m_instance;
     }
 
-    bool gShader::Register(const std::string &name) {
-        auto location = GL_CALL(glGetUniformLocation(m_instance->m_id, name.c_str()));
+    bool gShader::SetUniform(const std::string& name, const void *data) {
+        if (!data) {
+            m_error << "Invalid source." << std::endl;
+            return false;
+        }
+
+        auto shader = GetCurrent();
+        if (!shader) {
+            m_error << "Shader not selected, please use bind on shader." << std::endl;
+            return false;
+        }
+
+        if (!shader->hasUniform(name)) {
+            m_error << "Uniform do not found." << std::endl;
+            return false;
+        }
+        return shader->setUniform(name, data);
+    }
+
+    void gShader::Flush() {
+        auto shader = GetCurrent();
+        if (!shader) {
+            return;
+        }
+
+        for (auto &&[name, uniform] : shader->m_uniformMap) {
+            switch (uniform.type) {
+            case UniformType::INT:
+                GL_CALL(glUniform1iv(uniform.id, uniform.count, static_cast<const GLint *>(uniform.data)));
+                break;
+            case UniformType::VEC2:
+                GL_CALL(glUniform2fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                break;
+            case UniformType::VEC3:
+                GL_CALL(glUniform3fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                break;
+            case UniformType::VEC4:
+                GL_CALL(glUniform4fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                break;
+            case UniformType::MAT3:
+                GL_CALL(glUniformMatrix3fv(uniform.id, uniform.count, GL_FALSE, static_cast<const GLfloat *>(uniform.data)));
+                break;
+            case UniformType::MAT4:
+                GL_CALL(glUniformMatrix4fv(uniform.id, uniform.count, GL_FALSE, static_cast<const GLfloat *>(uniform.data)));
+                break;
+            default:
+                continue;;
+            }
+        }
+    }
+
+    bool gShader::isValid() const {
+        return m_bValid && m_id;
+    }
+
+    bool gShader::registry(const std::string &name, UniformType type, grm::u32 count, const void *data) {
+        auto shader = GetCurrent();
+        if (!shader) {
+            m_error << "Shader not selected, please use bind on shader." << std::endl;
+            return false;
+        }
+
+        auto location = GL_CALL(glGetUniformLocation(shader->m_id, name.c_str()));
         if (location == -1) {
             m_error << "Uniform do not found: " << name << std::endl;
             return false;
         }
-        m_instance->m_uniformMap[name] = location;
+        shader->m_uniformMap[name] = {location, nullptr, count, type};
+        if (data) {
+            shader->setUniform(name, data);
+        }
         return true;
     }
 
-    template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const Matrix4x4& data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, data.getData()));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
+    bool gShader::hasUniform(const std::string &name) const {
+        return m_uniformMap.find(name) != m_uniformMap.end();
+    }
+
+    bool gShader::setUniform(const std::string &name, const void *data) {
+        auto &uniform = m_uniformMap[name];
+        std::size_t size = 0;
+        switch (uniform.type) {
+        case UniformType::INT:
+            size = uniform.count * sizeof(int);
+            break;
+        case UniformType::VEC2:
+            size = uniform.count * sizeof(Vector2);
+            break;
+        case UniformType::VEC3:
+            size = uniform.count * sizeof(Vector3);
+            break;
+        case UniformType::VEC4:
+            size = uniform.count * sizeof(Vector4);
+            break;
+        case UniformType::MAT3:
+            size = uniform.count * sizeof(Matrix3x3);
+            break;
+        case UniformType::MAT4:
+            size = uniform.count * sizeof(Matrix4x4);
+            break;
+        default:
+            return false;
         }
-    }
 
-    template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const Vector3& data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform3fv(it->second, static_cast<GLsizei>(count), data.data));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
+        if (uniform.data) {
+            std::free(uniform.data);
         }
+        
+        uniform.data = std::malloc(size);
+        std::memcpy(uniform.data, data, size);
+        return true;
     }
 
-    template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const int *value) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform1iv(it->second, static_cast<GLsizei>(count), static_cast<const GLint*>(value)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const Matrix4x4 *value) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniformMatrix4fv(it->second, static_cast<GLsizei>(count), GL_FALSE, reinterpret_cast<const GLfloat *>(value)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, grm::u16 count, const Color& data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform4fv(it->second, static_cast<GLsizei>(count), data.data));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, int data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform1i(it->second, static_cast<const GLint>(data)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, Vector3 data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform3fv(it->second, 1, reinterpret_cast<const GLfloat*>(data.data)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, Vector4 data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform4fv(it->second, 1, reinterpret_cast<const GLfloat*>(data.data)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    template <>
-    void gShader::SetUniform(const std::string& name, Color data) {
-        auto it = m_instance->m_uniformMap.find(name);
-        if (m_instance->m_uniformMap.end() != it) {
-            GL_CALL(glUniform4fv(it->second, 1, reinterpret_cast<const GLfloat*>(data.data)));
-        } else {
-            std::cout << "Invalid Uniform: " << name << std::endl;
-        }
-    }
-
-    bool gShader::HasUniform(const std::string &name) {
-        return m_instance->m_uniformMap.find(name) != m_instance->m_uniformMap.end();
-    }
-
-    bool gShader::isValid() const
-    {
-        return m_bValid && m_id;
-    }
-
-    const bool gShader::checkerrors(grm::u32 shader, bool compile) {
+    bool gShader::checkerrors(grm::u32 shader, bool compile) {
         GLint status;
         if (compile) {
             GL_CALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &status));
@@ -241,3 +254,6 @@ namespace grr {
         return true;
     }
 } // namespace grr
+
+
+
