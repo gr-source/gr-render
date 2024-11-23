@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include <gr-math/gmath.h>
+#include <gr-math/gmath.hpp>
 
 #define GR_ASSERT(msg) assert(false && msg)
 
