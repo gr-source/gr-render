@@ -9,20 +9,15 @@
 extern std::ostringstream m_error;
 
 namespace grr {
-    gShader *gShader::m_instance = nullptr;
+    std::unordered_map<std::string, std::unique_ptr<Uniform>> gShader::m_uniformMap;
+
+    gShader *gShader::m_current = nullptr;
 
     gShader::gShader() : m_id(0), m_bValid(false) {}
 
     gShader::~gShader() {
         if (m_id) {
             GL_CALL(glDeleteProgram(m_id));
-        }
-
-        for (auto &&[name, uniform] : m_uniformMap) {
-            if (!uniform.data) {
-                continue;
-            }
-            std::free(uniform.data);
         }
     }
 
@@ -84,16 +79,16 @@ namespace grr {
     
     void gShader::Bind(gShader *shader) {
         GL_CALL(glUseProgram(shader->m_id));
-        gShader::m_instance = shader;
+        gShader::m_current = shader;
     }
 
     void gShader::Unbind() {
         GL_CALL(glUseProgram(0));
-        gShader::m_instance = nullptr;
+        gShader::m_current = nullptr;
     }
 
     gShader *gShader::GetCurrent() {
-        return gShader::m_instance;
+        return gShader::m_current;
     }
 
     bool gShader::SetUniform(const std::string& name, const void *data) {
@@ -102,17 +97,16 @@ namespace grr {
             return false;
         }
 
-        auto shader = GetCurrent();
-        if (!shader) {
-            m_error << "Shader not selected, please use bind on shader." << std::endl;
-            return false;
-        }
-
-        if (!shader->hasUniform(name)) {
+        if (m_uniformMap.find(name) == m_uniformMap.end()) {
             m_error << "Uniform do not found." << std::endl;
             return false;
         }
-        return shader->setUniform(name, data);
+        auto &uniform = m_uniformMap[name];
+        if (!uniform->getData()) {
+            return false;
+        }
+        uniform->setData(data);
+        return true;
     }
 
     void gShader::Flush() {
@@ -121,28 +115,33 @@ namespace grr {
             return;
         }
 
-        for (auto &&[name, uniform] : shader->m_uniformMap) {
-            switch (uniform.type) {
+        for (auto &&[name, uniform] : m_uniformMap) {
+            if (!uniform->isValid()) { continue; }
+
+            auto location = glGetUniformLocation(shader->m_id, name.c_str());
+            if (location == -1) { continue; }
+
+            switch (uniform->getType()) {
             case UniformType::INT:
-                GL_CALL(glUniform1iv(uniform.id, uniform.count, static_cast<const GLint *>(uniform.data)));
+                GL_CALL(glUniform1iv(location, (uniform->getSize() / sizeof(GLint)), static_cast<const GLint *>(uniform->getData())));
                 break;
             case UniformType::VEC2:
-                GL_CALL(glUniform2fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                GL_CALL(glUniform2fv(location, (uniform->getSize() / sizeof(Vector2)), static_cast<const GLfloat *>(uniform->getData())));
                 break;
             case UniformType::VEC3:
-                GL_CALL(glUniform3fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                GL_CALL(glUniform3fv(location, (uniform->getSize() / sizeof(Vector3)), static_cast<const GLfloat *>(uniform->getData())));
                 break;
             case UniformType::VEC4:
-                GL_CALL(glUniform4fv(uniform.id, uniform.count, static_cast<const GLfloat *>(uniform.data)));
+                GL_CALL(glUniform4fv(location, (uniform->getSize() / sizeof(Vector4)), static_cast<const GLfloat *>(uniform->getData())));
                 break;
             case UniformType::MAT3:
-                GL_CALL(glUniformMatrix3fv(uniform.id, uniform.count, GL_FALSE, static_cast<const GLfloat *>(uniform.data)));
+                GL_CALL(glUniformMatrix3fv(location, (uniform->getSize() / sizeof(Matrix3x3)), GL_FALSE, static_cast<const GLfloat *>(uniform->getData())));
                 break;
             case UniformType::MAT4:
-                GL_CALL(glUniformMatrix4fv(uniform.id, uniform.count, GL_FALSE, static_cast<const GLfloat *>(uniform.data)));
+                GL_CALL(glUniformMatrix4fv(location, (uniform->getSize() / sizeof(Matrix4x4)), GL_FALSE, static_cast<const GLfloat *>(uniform->getData())));
                 break;
             default:
-                continue;;
+                continue;
             }
         }
     }
@@ -152,6 +151,16 @@ namespace grr {
     }
 
     bool gShader::registry(const std::string &name, UniformType type, grm::u32 count, const void *data) {
+        if (m_uniformMap.find(name) != m_uniformMap.end()) {
+            return true;
+        }
+
+        if (count <= 0) {
+            return false;
+        }
+
+        m_uniformMap[name] = std::make_unique<Uniform>(name, type, count, data);
+        /*
         auto shader = GetCurrent();
         if (!shader) {
             m_error << "Shader not selected, please use bind on shader." << std::endl;
@@ -163,49 +172,12 @@ namespace grr {
             m_error << "Uniform do not found: " << name << std::endl;
             return false;
         }
+       
         shader->m_uniformMap[name] = {location, nullptr, count, type};
         if (data) {
             shader->setUniform(name, data);
         }
-        return true;
-    }
-
-    bool gShader::hasUniform(const std::string &name) const {
-        return m_uniformMap.find(name) != m_uniformMap.end();
-    }
-
-    bool gShader::setUniform(const std::string &name, const void *data) {
-        auto &uniform = m_uniformMap[name];
-        std::size_t size = 0;
-        switch (uniform.type) {
-        case UniformType::INT:
-            size = uniform.count * sizeof(int);
-            break;
-        case UniformType::VEC2:
-            size = uniform.count * sizeof(Vector2);
-            break;
-        case UniformType::VEC3:
-            size = uniform.count * sizeof(Vector3);
-            break;
-        case UniformType::VEC4:
-            size = uniform.count * sizeof(Vector4);
-            break;
-        case UniformType::MAT3:
-            size = uniform.count * sizeof(Matrix3x3);
-            break;
-        case UniformType::MAT4:
-            size = uniform.count * sizeof(Matrix4x4);
-            break;
-        default:
-            return false;
-        }
-
-        if (uniform.data) {
-            std::free(uniform.data);
-        }
-        
-        uniform.data = std::malloc(size);
-        std::memcpy(uniform.data, data, size);
+        */
         return true;
     }
 
@@ -255,5 +227,60 @@ namespace grr {
     }
 } // namespace grr
 
+Uniform::Uniform(const std::string &name, UniformType type, grm::u32 count, const void *data) : m_name(name), m_type(type), m_size(0), m_data(nullptr) {
+    if (count <= 0) { return; }
 
+    switch (type) {
+    case UniformType::INT:
+        m_size = count * sizeof(GLint);
+        break;
+    case UniformType::VEC2:
+        m_size = count * sizeof(Vector2);
+        break;
+    case UniformType::VEC3:
+        m_size = count * sizeof(Vector3);
+        break;
+    case UniformType::VEC4:
+        m_size = count * sizeof(Vector4);
+        break;
+    case UniformType::MAT3:
+        m_size = count * sizeof(Matrix3x3);
+        break;
+    case UniformType::MAT4:
+        m_size = count * sizeof(Matrix4x4);
+        break;
+    default:
+        return;
+    }
 
+    m_data = std::malloc(m_size);
+    if (data) {
+        std::memcpy(m_data, data, m_size);
+    }
+}
+
+Uniform::~Uniform() {
+    if (m_data) {
+        std::free(m_data);
+    }
+}
+
+bool Uniform::isValid() const {
+    return m_data != nullptr && m_size > 0;
+}
+
+const void *Uniform::getData() const {
+    return m_data;
+}
+
+void Uniform::setData(const void *data) {
+    std::memcpy(m_data, data, m_size);
+}
+
+UniformType Uniform::getType() const {
+    return m_type;
+}
+
+grm::size Uniform::getSize() const {
+    return m_size;
+}

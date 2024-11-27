@@ -2,6 +2,8 @@
 
 #include "gCommon.h"
 
+#include <memory>
+
 enum class UniformType {
     NONE,
     VEC2,
@@ -12,11 +14,29 @@ enum class UniformType {
     INT
 };
 
-struct Uniform {
-    int id;
-    void *data;
-    grm::u32 count;
-    UniformType type;
+class Uniform {
+public:
+    Uniform(const std::string &name, UniformType type, grm::u32 count, const void *data);
+    ~Uniform();
+
+    bool isValid() const;
+
+    const void *getData() const;
+
+    void setData(const void *data);
+
+    UniformType getType() const;
+
+    grm::size getSize() const;
+
+private:
+    std::string m_name;
+    
+    UniformType m_type;
+
+    grm::size m_size;
+
+    void *m_data;
 };
 
 namespace grr {
@@ -54,19 +74,16 @@ namespace grr {
         bool isValid() const;
 
     private:
-        std::unordered_map<std::string, Uniform> m_uniformMap;
+        static std::unordered_map<std::string, std::unique_ptr<Uniform>> m_uniformMap;
+
+        static gShader *m_current;
 
         grm::u32 m_id;
 
         bool m_bValid;
 
+
         static bool registry(const std::string& name, UniformType type, grm::u32 count, const void *data);
-
-        bool hasUniform(const std::string &name) const;
-
-        bool setUniform(const std::string &name, const void *data);
-
-        static gShader* m_instance;
 
         static bool checkerrors(grm::u32 shader, bool compile);
     };
