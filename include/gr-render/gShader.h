@@ -69,7 +69,7 @@ namespace grr {
         template <typename T>
         static bool SetUniform(const std::string &name, T data);
 
-        static void Flush();
+        // static void Flush();
 
         bool isValid() const;
 
@@ -81,7 +81,6 @@ namespace grr {
         grm::u32 m_id;
 
         bool m_bValid;
-
 
         static bool registry(const std::string& name, UniformType type, grm::u32 count, const void *data);
 

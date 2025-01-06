@@ -17,6 +17,7 @@ set(render_src
     src/gShader.cpp
     src/gCommon.cpp
     src/gError.cpp
+    src/shader.cpp
     src/gl.cpp
 )
 

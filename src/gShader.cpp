@@ -109,6 +109,7 @@ namespace grr {
         return true;
     }
 
+    /*
     void gShader::Flush() {
         auto shader = GetCurrent();
         if (!shader) {
@@ -145,6 +146,7 @@ namespace grr {
             }
         }
     }
+    */
 
     bool gShader::isValid() const {
         return m_bValid && m_id;
@@ -160,24 +162,7 @@ namespace grr {
         }
 
         m_uniformMap[name] = std::make_unique<Uniform>(name, type, count, data);
-        /*
-        auto shader = GetCurrent();
-        if (!shader) {
-            m_error << "Shader not selected, please use bind on shader." << std::endl;
-            return false;
-        }
-
-        auto location = GL_CALL(glGetUniformLocation(shader->m_id, name.c_str()));
-        if (location == -1) {
-            m_error << "Uniform do not found: " << name << std::endl;
-            return false;
-        }
-       
-        shader->m_uniformMap[name] = {location, nullptr, count, type};
-        if (data) {
-            shader->setUniform(name, data);
-        }
-        */
+        
         return true;
     }
 
