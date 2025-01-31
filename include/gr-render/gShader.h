@@ -4,106 +4,63 @@
 
 #include <memory>
 
-enum class UniformType {
-    NONE,
-    VEC2,
-    VEC3,
-    VEC4,
-    MAT3,
-    MAT4,
-    INT
-};
+#include <stdint.h>
 
-class Uniform {
-public:
-    Uniform(const std::string &name, UniformType type, grm::u32 count, const void *data);
-    ~Uniform();
-
-    bool isValid() const;
-
-    const void *getData() const;
-
-    void setData(const void *data);
-
-    UniformType getType() const;
-
-    grm::size getSize() const;
-
-private:
-    std::string m_name;
-    
-    UniformType m_type;
-
-    grm::size m_size;
-
-    void *m_data;
-};
+#define MAX_UNIFORM 100
 
 namespace grr {
+    enum UniformType {
+        UniformType_none   = 1 << 0,
+        UniformType_int    = 1 << 1,
+        UniformType_float  = 1 << 2,
+        UniformType_vec2   = 1 << 3,
+        UniformType_vec3   = 1 << 4,
+        UniformType_vec4   = 1 << 5,
+        UniformType_mat3   = 1 << 6,
+        UniformType_mat4   = 1 << 7,
+    };
+
+    struct Uniform {
+        char *name;
+        UniformType type;
+        int index;
+        uint32_t count;
+        void *data;
+    };
+    
     class gShader {
     public:
         gShader();
         ~gShader();
 
-        static gShader *Create(const char **fragments, const char **vertex);
-
-        static void SetupShader(const char **fragments, const char **vertex);
-
-        static void Bind(gShader *shader);
-
-        static void Unbind();
-
-        static gShader* GetCurrent();
-
-        template <typename T>
-        static bool Register(const std::string& name, UniformType type, grm::u32 count, const T *data);
-
-        template <typename T>
-        static bool Register(const std::string& name, UniformType type, grm::u32 count, T data);
-
-        static bool SetUniform(const std::string &name, const void *data);
-
-        template <typename T>
-        static bool SetUniform(const std::string &name, const T *data);
-
-        template <typename T>
-        static bool SetUniform(const std::string &name, T data);
-
-        // static void Flush();
+        void build(const char **fragment, int nfrag, const char **vertex, int nvert);
 
         bool isValid() const;
 
+        int registry(const char *name, UniformType type);
+
+        void setUniform(const char *name, uint32_t count, const void *data);
+
+        void flush();
+        
+        void bind();
+
+        void unbind();
+
     private:
-        static std::unordered_map<std::string, std::unique_ptr<Uniform>> m_uniformMap;
+        uint32_t programID;
 
-        static gShader *m_current;
+        Uniform *uniform_list;
 
-        grm::u32 m_id;
+        size_t numUniform;
 
-        bool m_bValid;
+        bool valid;
 
-        static bool registry(const std::string& name, UniformType type, grm::u32 count, const void *data);
-
-        static bool checkerrors(grm::u32 shader, bool compile);
+        int findUniform(const char *name);
     };
+};
 
-    template <typename T>
-    inline bool gShader::Register(const std::string &name, UniformType type, grm::u32 count, const T *data) {
-        return registry(name, type, count, reinterpret_cast<const void *>(data));
-    }
 
-    template <typename T>
-    inline bool gShader::Register(const std::string &name, UniformType type, grm::u32 count, T data) {
-        return registry(name, type, count, reinterpret_cast<const void *>(&data));
-    }
 
-    template <typename T>
-    inline bool gShader::SetUniform(const std::string &name, const T *data) {
-        return gShader::SetUniform(name, reinterpret_cast<const void *>(data));
-    }
 
-    template <typename T>
-    inline bool gShader::SetUniform(const std::string &name, T data) {
-        return gShader::SetUniform(name, reinterpret_cast<const void *>(&data));
-    }
-}
+

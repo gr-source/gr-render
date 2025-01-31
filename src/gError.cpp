@@ -1,12 +1,20 @@
 #include "gError.h"
 
-#include "gl.h"
+#include <stdarg.h>
+#include <stdio.h>
 
-std::ostringstream m_error;
+static char strerror[1024];
 
-std::string grr::gError::GetError() {
-    auto temp = m_error.str();
-    m_error.clear();
-    return temp;
+const char *grr::error() {
+    return strerror;
+}
+
+void grr::error(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+
+    vsnprintf(strerror, sizeof(strerror), fmt, args);
+
+    va_end(args);
 }
 
