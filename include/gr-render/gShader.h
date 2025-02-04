@@ -26,6 +26,7 @@ namespace grr {
         int index;
         uint32_t count;
         void *data;
+        bool dirty;
     };
     
     class gShader {

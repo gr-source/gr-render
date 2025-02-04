@@ -14,6 +14,7 @@ grr::gShader::gShader() : programID(glCreateProgram()), valid(false), uniform_li
         uniform.name = nullptr;
         uniform.data = nullptr;
         uniform.index = -1;
+        uniform.dirty = false;
     }
 }
 
@@ -125,6 +126,7 @@ int grr::gShader::registry(const char *name, UniformType type) {
     uniform.index = id;
     uniform.data = nullptr;
     uniform.type = type;
+    uniform.dirty = false;
 
     return numUniform++;
 }
@@ -162,20 +164,29 @@ void grr::gShader::setUniform(const char *name, uint32_t count, const void *data
         return;
     }
 
-    if (uniform.data != nullptr) {
-        free(uniform.data);
+    if (uniform.count != count) {
+        if (uniform.data != nullptr) {
+            free(uniform.data);
+        }
+        uniform.data = malloc(stride);
+        uniform.count = count;
     }
 
-    uniform.data = malloc(stride);
-    uniform.count = count;
-
-
     memcpy(uniform.data, data, stride);
-}   
+
+    uniform.dirty = true;
+}
 
 void grr::gShader::flush() {
-    for (size_t i=0;i<numUniform;i++) {
-        auto& uniform = uniform_list[i];
+    auto temp = numUniform;
+    while (temp--) {
+        auto& uniform = uniform_list[temp];
+
+        if (!uniform.dirty) {
+            continue;
+        }
+
+        uniform.dirty = false;
 
         switch (uniform.type) {
         case UniformType_int:
@@ -200,7 +211,7 @@ void grr::gShader::flush() {
             GL_CALL(glUniformMatrix4fv(uniform.index, uniform.count, GL_FALSE, (const GLfloat *)uniform.data));
             break;
         default:
-            continue;
+            break;
         }
     }
 }
