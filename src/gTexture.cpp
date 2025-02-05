@@ -77,6 +77,9 @@ namespace grr {
         case TextureFormat_DepthComponent:
             GL_CALL(glTexImage2D(internalTarget, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, pixels));
             break;
+        case TextureFormat_RED_INTEGER:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, pixels));
+            break;
         default:
             break;
         }

@@ -94,7 +94,8 @@ namespace grr {
         TextureFormat_RGBA = 1 << 8,
         TextureFormat_RGBA4444 = 1 << 9,
         TextureFormat_RGBA8888 = 1 << 10,
-        TextureFormat_DepthComponent = 1 << 11
+        TextureFormat_DepthComponent = 1 << 11,
+        TextureFormat_RED_INTEGER = 1 << 12
     };
 
     enum gTextureFlags : grm::u32 {
