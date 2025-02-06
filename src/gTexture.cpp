@@ -8,25 +8,30 @@ namespace grr {
 
     gTexture *gTexture::s_current = nullptr;
 
-    gTexture *gTexture::Create() {
-        return new gTexture();
+    void gTexture::Unbind(grm::u32 index) {
+        GL_CALL(glActiveTexture(GL_TEXTURE0 + index));
+        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 
-    void gTexture::UpdateTexture(grm::u32 width, grm::u32 height, grm::u32 flags, TextureFormat format, void *pixels) {
-        auto texture = s_current;
-        texture->m_height = height;
-        texture->m_width = width;
-        texture->m_format = format;
-        texture->m_flags = flags;
+    gTexture *gTexture::GetCurrent() {
+        return s_current;
+    }
 
-        auto target = (flags & gTextureFlags_Cubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D);
+    gTexture::gTexture() : m_width(0), m_height(0), m_index(0), m_active(0) {}
 
-        if (!texture->isValid())
-            GL_CALL(glGenTextures(1, &texture->m_index));
 
-        GL_CALL(glBindTexture(target, texture->m_index));
+    void gTexture::updateBuffer(grm::u32 width, grm::u32 height, grm::u32 flags, TextureFormat format, void *pixels) {
+        m_height = height;
+        m_width = width;
+        m_format = format;
+        m_flags = flags;
 
-        GLenum internalTarget = target;
+        if (!isValid())
+            GL_CALL(glGenTextures(1, &m_index));
+
+        GL_CALL(glBindTexture(getTargetTexture(), m_index));
+
+        GLenum internalTarget = getTargetTexture();
         if (flags & gTextureFlags_Cubemap) {
             if (flags & gTextureFlags_Cubemap_Positive_X) {
                 internalTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -85,64 +90,55 @@ namespace grr {
         }
 
         if (flags & gTextureFlags_MipMaps)
-            GL_CALL(glGenerateMipmap(target));
+            GL_CALL(glGenerateMipmap(getTargetTexture()));
 
         // texture clamping
         if (flags & gTextureFlags_Clamp_Edge) {
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
         } else if (flags & gTextureFlags_Clamp_Border) {
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
         } else {
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT));
-            GL_CALL(glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_S, GL_REPEAT));
+            GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_WRAP_T, GL_REPEAT));
         }
         
         // filtro de textura
-        GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-        GL_CALL(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+        GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+        GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
         if (flags & gTextureFlags_MipMaps) {
             if (flags & gTextureFlags_Filter_Linear) {
-                GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+                GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_MIN_FILTER, GL_LINEAR));
             } else if (flags & gTextureFlags_Filter_Bilinear) {
-                GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST));
+                GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST));
             } else if (flags & gTextureFlags_Filter_Trilinear) {
-                GL_CALL(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+                GL_CALL(glTexParameteri(getTargetTexture(), GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
             }
         }
-
-        GL_CALL(glBindTexture(target, 0));
+        GL_CALL(glBindTexture(getTargetTexture(), 0));
     }
-
-    void gTexture::Bind(gTexture *texture, int idx) {
-        GL_CALL(glActiveTexture(GL_TEXTURE0 + idx));
-
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-        if (texture)
-            GL_CALL(glBindTexture(texture->getTargetTexture(), texture->m_index));
-
-        s_current = texture;
-    }
-
-    void gTexture::Unbind() {
-        GL_CALL(glActiveTexture(GL_TEXTURE0));
-        GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
-
-        s_current = nullptr;
-    }
-
-    gTexture *gTexture::GetCurrent() {
-        return s_current;
-    }
-
-    gTexture::gTexture() : m_width(0), m_height(0), m_index(0) {}
 
     gTexture::~gTexture() {
         if (m_index) {
             glDeleteTextures(1, &m_index);
         }
+    }
+
+    void gTexture::bind(grm::u32 index) {
+        m_active = GL_TEXTURE0 + index;
+        
+        GL_CALL(glActiveTexture(m_active));
+
+        GL_CALL(glBindTexture(getTargetTexture(), m_index));
+
+        s_current = this;
+    }
+
+    void gTexture::unbind() {
+        GL_CALL(glActiveTexture(m_active));
+        GL_CALL(glBindTexture(getTargetTexture(), 0));
     }
 
     grm::u32 gTexture::getID() const {
