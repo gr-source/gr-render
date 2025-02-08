@@ -38,7 +38,6 @@ grr::gShader::~gShader() {
 void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, int nvert) {
     // Fragment shader
     auto shader_fragment = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
-
     GL_CALL(glShaderSource(shader_fragment, nfrag, fragment, nullptr));
     GL_CALL(glCompileShader(shader_fragment));
 
@@ -48,7 +47,6 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
     if (!success) {
         char infoLog[1024];
         GL_CALL(glGetShaderInfoLog(shader_fragment, 1024, nullptr, infoLog));
-
         error("fragment: %s", infoLog);
         GL_CALL(glDeleteShader(shader_fragment));
         valid = false;
@@ -57,7 +55,6 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
 
     // Vertex shader
     auto shader_vertex = GL_CALL(glCreateShader(GL_VERTEX_SHADER));
-
     GL_CALL(glShaderSource(shader_vertex, nvert, vertex, nullptr));
     GL_CALL(glCompileShader(shader_vertex));
 
@@ -66,14 +63,20 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
     if (!success) {
         char infoLog[1024];
         GL_CALL(glGetShaderInfoLog(shader_vertex, 1024, nullptr, infoLog));
-
         error("vertex: %s", infoLog);
-        
         GL_CALL(glDeleteShader(shader_vertex));
         valid = false;
         return;
     }
-    
+
+    // delete program
+    if (programID != 0) {
+        GL_CALL(glUseProgram(0));
+        GL_CALL(glDeleteProgram(programID));
+    }
+
+    programID = GL_CALL(glCreateProgram());
+
     // attach
     GL_CALL(glAttachShader(programID, shader_fragment));
     GL_CALL(glAttachShader(programID, shader_vertex));
@@ -85,11 +88,11 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
     if (!success) {
         char infoLog[1024];
         GL_CALL(glGetProgramInfoLog(programID, 1024, nullptr, infoLog));
-
         error("link: %s", infoLog);
 
         GL_CALL(glDeleteShader(shader_fragment));
         GL_CALL(glDeleteShader(shader_vertex));
+        GL_CALL(glDeleteProgram(programID));
         valid = false;
         return;
     }
@@ -222,6 +225,26 @@ void grr::gShader::bind() {
 
 void grr::gShader::unbind() {
     glUseProgram(0);
+}
+
+void grr::gShader::cleanUniform() {
+    for (size_t i=0;i<MAX_UNIFORM;i++) {
+        auto &uniform = uniform_list[i];
+        if (uniform.name != nullptr) {
+            free(uniform.name);
+            uniform.name = nullptr;
+        }
+
+        if (uniform.data != nullptr) {
+            free(uniform.data);
+            uniform.data = nullptr;
+        }
+        uniform.count = 0;
+
+        uniform.index = -1;
+        uniform.dirty = false;
+    }
+    numUniform = 0;
 }
 
 int grr::gShader::findUniform(const char *name) {

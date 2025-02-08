@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#define MAX_UNIFORM 100
+#define MAX_UNIFORM 200
 
 namespace grr {
     enum UniformType {
@@ -47,6 +47,8 @@ namespace grr {
         void bind();
 
         void unbind();
+
+        void cleanUniform();
 
     private:
         uint32_t programID;
