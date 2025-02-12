@@ -49,8 +49,6 @@ namespace grr {
             return 0;
         }
 
-        GL_CALL(glBindBuffer(m_bufferTypeMap[target], m_index));
-
         m_bufferIndex.emplace(m_index, m_bufferTypeMap[target]);
 
         return m_index;

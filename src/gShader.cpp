@@ -247,6 +247,16 @@ void grr::gShader::cleanUniform() {
     numUniform = 0;
 }
 
+grr::Uniform *grr::gShader::getUniform() const
+{
+    return uniform_list;
+}
+
+size_t grr::gShader::getUniformCount() const
+{
+    return numUniform;
+}
+
 int grr::gShader::findUniform(const char *name) {
     for (size_t i=0;i<MAX_UNIFORM;i++) {
         if (uniform_list[i].name == NULL) {

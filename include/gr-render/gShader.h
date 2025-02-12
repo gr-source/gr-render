@@ -50,6 +50,10 @@ namespace grr {
 
         void cleanUniform();
 
+        Uniform *getUniform() const;
+
+        size_t getUniformCount() const;
+
     private:
         uint32_t programID;
 
