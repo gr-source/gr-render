@@ -83,19 +83,26 @@ namespace grr {
     };
 
     enum TextureFormat : grm::u16 {
-        TextureFormat_SRGB = 1 << 0,
-        TextureFormat_RGB = 1 << 1,
-        TextureFormat_RGB332 = 1 << 2,
-        TextureFormat_RGB444 = 1 << 3,
-        TextureFormat_RGB565 = 1 << 4,
-        TextureFormat_RGB888 = 1 << 5,
-
-        TextureFormat_SRGBA = 1 << 6,
-        TextureFormat_RGBA = 1 << 8,
-        TextureFormat_RGBA4444 = 1 << 9,
-        TextureFormat_RGBA8888 = 1 << 10,
+        TextureFormat_SRGB           = 1 << 0,
+        TextureFormat_RGB            = 1 << 1,
+        TextureFormat_RGB332         = 1 << 2,
+        TextureFormat_RGB444         = 1 << 3,
+        TextureFormat_RGB565         = 1 << 4,
+        TextureFormat_RGB888         = 1 << 5,
+        TextureFormat_SRGBA          = 1 << 6,
+        TextureFormat_RGBA           = 1 << 8,
+        TextureFormat_RGBA4444       = 1 << 9,
+        TextureFormat_RGBA8888       = 1 << 10,
         TextureFormat_DepthComponent = 1 << 11,
-        TextureFormat_RED_INTEGER = 1 << 12
+        TextureFormat_RED_INTEGER    = 1 << 12,
+        TextureFormat_RGB16F         = 1 << 13,
+        TextureFormat_RGB32F         = 1 << 14,
+        TextureFormat_RGBA16F        = 1 << 15,
+        TextureFormat_RGBA32F        = 17 << 1,
+        TextureFormat_RED            = 17 << 2,
+        TextureFormat_RG             = 17 << 3,
+        TextureFormat_RG16F          = 17 << 4,
+        TextureFormat_RG32F          = 17 << 5,
     };
 
     enum gTextureFlags : grm::u32 {

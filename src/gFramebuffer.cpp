@@ -66,44 +66,50 @@ namespace grr {
         GL_CALL(glDeleteFramebuffers(1, &id));
     }
 
-    void gFramebuffer::GetPixels(int x, int y, grm::u32 width, grm::u32 height, TextureFormat format, void *pixels) {
+    void gFramebuffer::GetPixels(grm::u8 attachmentID, int x, int y, grm::u32 width, grm::u32 height, TextureFormat format, void *pixels) {
         GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, s_current));
-        GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0));
+        GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentID));
 
         switch (format) {
-        case TextureFormat_SRGB:
-            GL_CALL(glReadPixels(x, y, width, height, GL_SRGB, GL_UNSIGNED_BYTE, pixels));
-            break;
-        case TextureFormat_RGB:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_FLOAT, pixels));
-            break;
-        case TextureFormat_RGB332:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pixels));
-            break;
-        case TextureFormat_RGB565:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels));
-            break;
-        case TextureFormat_RGB444:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB4, GL_UNSIGNED_SHORT_4_4_4_4, pixels));
-            break;
-        case TextureFormat_RGB888:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGB8, GL_UNSIGNED_BYTE, pixels));
-            break;
-        case TextureFormat_SRGBA:
-            GL_CALL(glReadPixels(x, y, width, height, GL_SRGB_ALPHA, GL_UNSIGNED_BYTE, pixels));
-            break;
-        case TextureFormat_RGBA:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
-            break;
-        case TextureFormat_RGBA4444:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGBA4, GL_UNSIGNED_SHORT_4_4_4_4, pixels));
-            break;
-        case TextureFormat_RGBA8888:
-            GL_CALL(glReadPixels(x, y, width, height, GL_RGBA8, GL_UNSIGNED_BYTE, pixels));
-            break;
-        case TextureFormat_DepthComponent:
-            GL_CALL(glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, pixels));
-            break;
+            case TextureFormat_RGB:
+            case TextureFormat_SRGB:
+            case TextureFormat_RGB888:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels));
+                break;
+            case TextureFormat_RGB332:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pixels));
+                break;
+            case TextureFormat_RGB565:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels));
+                break;
+            case TextureFormat_RGB444:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_SHORT_4_4_4_4, pixels));
+                break;
+            case TextureFormat_RGBA:
+            case TextureFormat_SRGBA:
+            case TextureFormat_RGBA8888:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels));
+                break;
+            case TextureFormat_RGBA4444:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, pixels));
+                break;
+            case TextureFormat_DepthComponent:
+                GL_CALL(glReadPixels(x, y, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, pixels));
+                break;
+            case TextureFormat_RGB16F:
+            case TextureFormat_RGB32F:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_FLOAT, pixels));
+                break;
+            case TextureFormat_RGBA16F:
+            case TextureFormat_RGBA32F:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RGBA, GL_FLOAT, pixels));
+                break;
+            case TextureFormat_RED_INTEGER:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RED_INTEGER, GL_INT, pixels));
+                break;
+            case TextureFormat_RED:
+                GL_CALL(glReadPixels(x, y, width, height, GL_RED, GL_UNSIGNED_BYTE, pixels));
+                break;
         default:
             break;
         }

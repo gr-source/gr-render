@@ -83,7 +83,31 @@ namespace grr {
             GL_CALL(glTexImage2D(internalTarget, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, pixels));
             break;
         case TextureFormat_RED_INTEGER:
-            GL_CALL(glTexImage2D(internalTarget, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, pixels));
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_INT, pixels));
+            break;
+        case TextureFormat_RGB16F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, pixels));
+            break;
+        case TextureFormat_RGB32F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, pixels));
+            break;
+        case TextureFormat_RGBA16F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_FLOAT, pixels));
+            break;
+        case TextureFormat_RGBA32F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RGBA32F, width, height, 0, GL_RGB, GL_FLOAT, pixels));
+            break;
+        case TextureFormat_RED:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, pixels));
+            break;
+        case TextureFormat_RG:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RG, width, height, 0, GL_RG, GL_UNSIGNED_BYTE, pixels));
+            break;
+        case TextureFormat_RG16F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, pixels));
+            break;
+        case TextureFormat_RG32F:
+            GL_CALL(glTexImage2D(internalTarget, 0, GL_RG16F, width, height, 0, GL_RG, GL_FLOAT, pixels));
             break;
         default:
             break;

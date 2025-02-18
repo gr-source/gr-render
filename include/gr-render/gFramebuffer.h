@@ -17,7 +17,7 @@ namespace grr {
 
         static void Destroy(grm::u32 id);
 
-        static void GetPixels(int x, int y, grm::u32 width, grm::u32 height, TextureFormat format, void *pixels);
+        static void GetPixels(grm::u8 attachmentID, int x, int y, grm::u32 width, grm::u32 height, TextureFormat format, void *pixels);
         
         static void Release();
         
