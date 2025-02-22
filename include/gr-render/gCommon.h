@@ -152,6 +152,29 @@ namespace grr {
         RenderbufferType_Depth32F_Stencil8   = 1 << 6,
         RenderbufferType_Stencil             = 1 << 7
     };
+
+    enum UniformType : uint16_t {
+        UniformType_none        = 1 << 0,
+        UniformType_bool        = 1 << 1,
+        UniformType_int         = 1 << 2,
+        UniformType_float       = 1 << 3,
+        UniformType_vec2        = 1 << 4,
+        UniformType_vec3        = 1 << 5,
+        UniformType_vec4        = 1 << 6,
+        UniformType_mat3        = 1 << 7,
+        UniformType_mat4        = 1 << 8,
+        UniformType_sampler2D   = 1 << 9,
+        UniformType_samplerCube = 1 << 10,
+    };
+
+    typedef struct {
+        char *name;
+        UniformType type;
+        int index;
+        uint32_t stride;
+        void *data;
+        bool dirty;
+    } Uniform;
 };
 
 

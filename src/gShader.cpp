@@ -107,7 +107,7 @@ bool grr::gShader::isValid() const {
     return valid;
 }
 
-int grr::gShader::registry(const char *name, UniformType type) {
+int grr::gShader::registry(const char *name, uint32_t count, UniformType type) {
     int id = findUniform(name);
 
     if (id != -1) { return id; }
@@ -123,25 +123,11 @@ int grr::gShader::registry(const char *name, UniformType type) {
         return -1;
     }
 
-
-    auto &uniform = uniform_list[numUniform];
-    uniform.name = strdup(name);
-    uniform.index = id;
-    uniform.data = nullptr;
-    uniform.type = type;
-    uniform.dirty = false;
-
-    return numUniform++;
-}
-
-void grr::gShader::setUniform(const char *name, uint32_t count, const void *data) {
-    int id = findUniform(name);
-    if (id == -1) { return; }
-
-    auto &uniform = uniform_list[id];
-
     size_t stride = 0;
-    switch (uniform.type) {
+    switch (type) {
+    case UniformType_samplerCube:
+    case UniformType_sampler2D:
+    case UniformType_bool:
     case UniformType_int:
         stride = count * sizeof(GLint);
         break;
@@ -164,18 +150,47 @@ void grr::gShader::setUniform(const char *name, uint32_t count, const void *data
         stride = count * sizeof(Matrix4x4);
         break;
     default:
-        return;
+        error("Type is not valid: ", name);
+        return -1;
     }
 
-    if (uniform.count != count) {
-        if (uniform.data != nullptr) {
-            free(uniform.data);
-        }
-        uniform.data = malloc(stride);
-        uniform.count = count;
+    auto &uniform = uniform_list[numUniform];
+    if (uniform.name != nullptr)
+    {
+        free(uniform.name);
     }
 
-    memcpy(uniform.data, data, stride);
+    uniform.name = strdup(name);
+    uniform.index = id;
+    uniform.data = nullptr;
+    uniform.type = type;
+    uniform.dirty = false;
+    uniform.stride = stride;
+    if (uniform.data != nullptr)
+    {
+        free(uniform.data);
+    }
+    
+    uniform.data = malloc(stride);
+    return numUniform++;
+}
+
+void grr::gShader::setUniform(const char *name, const void *data) {
+    int id = findUniform(name);
+    if (id == -1) { return; }
+
+    auto &uniform = uniform_list[id];
+
+    memcpy(uniform.data, data, uniform.stride);
+
+    uniform.dirty = true;
+}
+
+void grr::gShader::setUniform(int id, const void *data)
+{
+    auto &uniform = uniform_list[id];
+
+    memcpy(uniform.data, data, uniform.stride);
 
     uniform.dirty = true;
 }
@@ -192,26 +207,29 @@ void grr::gShader::flush() {
         uniform.dirty = false;
 
         switch (uniform.type) {
+        case UniformType_samplerCube:
+        case UniformType_sampler2D:
+        case UniformType_bool:
         case UniformType_int:
-            GL_CALL(glUniform1iv(uniform.index, uniform.count, (const GLint *)uniform.data));
+            GL_CALL(glUniform1iv(uniform.index, (uniform.stride / sizeof(GLint)), (const GLint *)uniform.data));
             break;
         case UniformType_float:
-            GL_CALL(glUniform1fv(uniform.index, uniform.count, (const GLfloat *)uniform.data));
+            GL_CALL(glUniform1fv(uniform.index, (uniform.stride / sizeof(GLfloat)), (const GLfloat *)uniform.data));
             break;
         case UniformType_vec2:
-            GL_CALL(glUniform2fv(uniform.index, uniform.count, (const GLfloat *)uniform.data));
+            GL_CALL(glUniform2fv(uniform.index, (uniform.stride / sizeof(Vector2)), (const GLfloat *)uniform.data));
             break;
         case UniformType_vec3:
-            GL_CALL(glUniform3fv(uniform.index, uniform.count, (const GLfloat *)uniform.data));
+            GL_CALL(glUniform3fv(uniform.index, (uniform.stride / sizeof(Vector3)), (const GLfloat *)uniform.data));
             break;
         case UniformType_vec4:
-            GL_CALL(glUniform4fv(uniform.index, uniform.count, (const GLfloat *)uniform.data));
+            GL_CALL(glUniform4fv(uniform.index, (uniform.stride / sizeof(Vector4)), (const GLfloat *)uniform.data));
             break;
         case UniformType_mat3:
-            GL_CALL(glUniformMatrix3fv(uniform.index, uniform.count, GL_FALSE, (const GLfloat *)uniform.data));
+            GL_CALL(glUniformMatrix3fv(uniform.index, (uniform.stride / sizeof(Matrix3x3)), GL_FALSE, (const GLfloat *)uniform.data));
             break;
         case UniformType_mat4:
-            GL_CALL(glUniformMatrix4fv(uniform.index, uniform.count, GL_FALSE, (const GLfloat *)uniform.data));
+            GL_CALL(glUniformMatrix4fv(uniform.index, (uniform.stride / sizeof(Matrix4x4)), GL_FALSE, (const GLfloat *)uniform.data));
             break;
         default:
             break;
@@ -239,7 +257,7 @@ void grr::gShader::cleanUniform() {
             free(uniform.data);
             uniform.data = nullptr;
         }
-        uniform.count = 0;
+        uniform.stride = 0;
 
         uniform.index = -1;
         uniform.dirty = false;
@@ -268,4 +286,9 @@ int grr::gShader::findUniform(const char *name) {
         }
     }
     return -1;
+}
+
+const char *grr::gShader::getName(int id) const
+{
+    return uniform_list[id].name;
 }
