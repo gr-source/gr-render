@@ -12,35 +12,55 @@ namespace grr {
         gTexture();
         ~gTexture();
 
-        void updateBuffer(grm::u32 width, grm::u32 height, grm::u32 flags, TextureFormat format, void* pixels);
+        void updateBuffer(grm::u32 width, grm::u32 height, void* pixels);
 
         void bind(grm::u32 index);
 
         void unbind();
 
-        grm::u32 getID() const;
+        grm::u32 getTargetTexture() const;
+
+        TextureID getTextureID() const;
 
         bool isValid() const;
-        
-        grm::u32 getTargetTexture();
 
-        static void Release();
+        bool isCubemap() const;
+
+        bool isTexture2D() const;
+        
+        void set_filtering(TextureFlags_ flags);
+
+        void set_clamping(TextureFlags_ flags);
+
+        void set_texture(TextureFlags_ flags);
+
+        void set_format(TextureFormat format);
+
+        void set_face(gTextureCubemapFace_ face);
+
+        void generate_mipmaps();
 
     private:
-        static std::unordered_map<grm::u32, grm::u32> m_textureMap;
-        
+        static const TextureFormatInfo TextureFormatInfoMapping[20];
+
         static gTexture *s_current;
 
         grm::u32 m_height;
         
         grm::u32 m_width;
 
-        grm::u32 m_index;
+        TextureID textureID;
 
-        grm::u32 m_flags;
+        TextureFlags_ texture_flags;
 
         grm::u32 m_active;
 
         TextureFormat m_format;
+
+        void apply_clamping() const;
+
+        void apply_filtering() const;
+
+        void apply_mipmaps() const;
     };
 } // namespace gr

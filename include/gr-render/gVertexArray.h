@@ -2,6 +2,8 @@
 
 #include "gCommon.h"
 
+#include <array>
+
 #define GR_MAX_BLOCK_BUFFER 1024
 
 namespace grr {
@@ -12,9 +14,9 @@ namespace grr {
         
         static gVertexArray *Create();
 
-        static grm::u32 CreateBuffer(BufferType target);
+        static BufferID CreateBuffer(BufferType_ target, const void *data = nullptr, std::size_t size = 0);
 
-        static void DeleteBuffer(grm::u32 index);
+        static void DeleteBuffer(BufferID index);
 
         static void Bind(grm::u32 index);
 
@@ -44,8 +46,6 @@ namespace grr {
 
         grm::u32 getID() const;
 
-        static void Release();
-
         static void Destroy(gVertexArray *target);
         
     private:
@@ -53,9 +53,9 @@ namespace grr {
 
         static grm::u32 s_currentBuffer;
 
-        static std::unordered_map<BufferType, grm::u32> m_bufferTypeMap;
+        static std::array<std::uint32_t, 5> bufferMappings;
 
-        static std::unordered_map<PrimitiveType, grm::u32> m_primitiveMap;
+        static std::array<grm::u32, 7> primitiveMappings;
 
         static std::unordered_map<grm::u32, grm::u32> m_bufferIndex;
 

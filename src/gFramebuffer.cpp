@@ -4,6 +4,7 @@
 #include "gTexture.h"
 #include "gl.h"
 
+#include <cassert>
 
 namespace grr {
     grm::u32 gFramebuffer::s_current = 0;
@@ -38,18 +39,13 @@ namespace grr {
     }
 
     void gFramebuffer::SetRenderbuffer(gFramebufferFlags attachment) {
-        auto &rbo = gRenderbuffer::GetCurrent();
-
-        assert(rbo && "Invalid render buffer.");
-
-        GL_CALL(glFramebufferRenderbuffer(GL_FRAMEBUFFER, m_apiFramebuffer[attachment], GL_RENDERBUFFER, rbo));
     }
 
     void gFramebuffer::SetTexture(gFramebufferFlags attachment, gFramebufferFlags textarget) {
         auto texture = grr::gTexture::GetCurrent();
         assert(texture != nullptr && "Invalid texture");
 
-        GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, m_apiFramebuffer[attachment], m_apiFramebuffer[textarget], texture->getID(), 0));
+        GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, m_apiFramebuffer[attachment], m_apiFramebuffer[textarget], texture->getTextureID(), 0));
     }
 
     void gFramebuffer::Unbind() {

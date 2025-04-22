@@ -26,7 +26,8 @@ namespace grr {
         {GR_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
     };
 
-    void gRender::SetRenderState(RenderState state, void *value) {
+    void gRender::SetRenderState(RenderState state, void *value)
+    {
         switch (state) {
         case GR_BACKGROUND_COLOR: {
             auto color = reinterpret_cast<Color *>(value);
@@ -146,12 +147,6 @@ namespace grr {
         m_renderStateMap.clear();
 
         gFramebuffer::Release();
-
-        gRenderbuffer::Release();
-
-        gTexture::Release();
-
-        gVertexArray::Release();
     }
 
     // void gRender::GetPixelData() {

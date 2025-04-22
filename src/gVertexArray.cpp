@@ -1,6 +1,9 @@
 #include "gVertexArray.h"
 
+#include "gCommon.h"
 #include "gl.h"
+#include <cstddef>
+#include <cstdint>
 
 namespace grr {
     gVertexArray::gVertexArray() : m_vao(0) {}
@@ -15,20 +18,22 @@ namespace grr {
 
     grm::u32 gVertexArray::s_currentBuffer = 0;
 
-    std::unordered_map<BufferType, grm::u32> gVertexArray::m_bufferTypeMap {
-        {BufferType::VBO, GL_ARRAY_BUFFER},
-        {BufferType::PBO, GL_ARRAY_BUFFER},
-        {BufferType::EBO, GL_ELEMENT_ARRAY_BUFFER}
+    std::array<std::uint32_t, 5> gVertexArray::bufferMappings = {
+        GL_ARRAY_BUFFER,            // BufferType::VBO
+        GL_ELEMENT_ARRAY_BUFFER,    // BufferType::EBO
+        GL_FRAMEBUFFER,             // BufferType::FBO
+        GL_RENDERBUFFER,            // BufferType::RBO
+        GL_TEXTURE_BUFFER           // BufferType::TBO
     };
 
-    std::unordered_map<PrimitiveType, grm::u32> gVertexArray::m_primitiveMap {
-        {PrimitiveType::POINTS, GL_POINTS},
-        {PrimitiveType::LINES, GL_LINES},
-        {PrimitiveType::LINE_LOOP, GL_LINE_LOOP},
-        {PrimitiveType::LINE_STRIP, GL_LINE_STRIP},
-        {PrimitiveType::TRIANGLES, GL_TRIANGLES},
-        {PrimitiveType::TRIANGLES_STRIP, GL_TRIANGLE_STRIP},
-        {PrimitiveType::TRIANGLES_FAN, GL_TRIANGLE_FAN}
+    std::array<std::uint32_t, 7> gVertexArray::primitiveMappings {
+        GL_POINTS,
+        GL_LINES,
+        GL_LINE_LOOP,
+        GL_LINE_STRIP,
+        GL_TRIANGLES,
+        GL_TRIANGLE_STRIP,
+        GL_TRIANGLE_FAN
     };
 
     std::unordered_map<grm::u32, grm::u32> gVertexArray::m_bufferIndex;
@@ -41,30 +46,42 @@ namespace grr {
         return vertexArray;
     }
 
-    grm::u32 gVertexArray::CreateBuffer(BufferType target) {
-        grm::u32 m_index = 0;
-        GL_CALL(glGenBuffers(1, &m_index));
-        if (!m_index) {
-            std::cout << "falied to create buffers" << std::endl;
+    BufferID gVertexArray::CreateBuffer(BufferType_ target, const void *data, std::size_t size)
+    {
+        BufferID bufferID = 0;
+        GL_CALL(glGenBuffers(1, &bufferID));
+        if (!bufferID)
+        {
             return 0;
         }
 
-        m_bufferIndex.emplace(m_index, m_bufferTypeMap[target]);
+        if (data != nullptr && size > 0)
+        {
+            GL_CALL(glBindBuffer(bufferMappings[target], bufferID));
+            GL_CALL(glBufferData(bufferMappings[target], size, data, GL_STATIC_DRAW));
+            GL_CALL(glBindBuffer(bufferMappings[target], 0));
+        }
 
-        return m_index;
+        m_bufferIndex.emplace(bufferID, bufferMappings[target]);
+
+        return bufferID;
     }
 
-    void gVertexArray::DeleteBuffer(grm::u32 index) {
+    void gVertexArray::DeleteBuffer(BufferID index)
+    {
         auto it = m_bufferIndex.find(index);
-        if (it == m_bufferIndex.end()) {
+        if (it == m_bufferIndex.end())
+        {
             return;
         }
+
         GL_CALL(glDeleteBuffers(1, &index));
 
         m_bufferIndex.erase(it);
     }
 
-    void gVertexArray::Bind(grm::u32 index) {
+    void gVertexArray::Bind(grm::u32 index)
+    {
         s_currentBuffer = m_bufferIndex[index];
 
         GL_CALL(glBindBuffer(m_bufferIndex[index], index));
@@ -114,19 +131,19 @@ namespace grr {
     }
 
     void gVertexArray::DrawElementsInstanced(PrimitiveType primitive, grm::u32 count, const void *indices, grm::u32 primcount) {
-        GL_CALL(glDrawElementsInstanced(m_primitiveMap[primitive], count, GL_UNSIGNED_INT, indices, primcount));
+        GL_CALL(glDrawElementsInstanced(primitiveMappings[primitive], count, GL_UNSIGNED_INT, indices, primcount));
     }
 
     void gVertexArray::DrawElements(PrimitiveType primitive, grm::u32 count, const void* indices) {
-        GL_CALL(glDrawElements(m_primitiveMap[primitive], count, GL_UNSIGNED_INT, indices));
+        GL_CALL(glDrawElements(primitiveMappings[primitive], count, GL_UNSIGNED_INT, indices));
     }
 
     void gVertexArray::DrawArrays(PrimitiveType primitive, grm::u32 count) {
-        GL_CALL(glDrawArrays(m_primitiveMap[primitive], 0, count));
+        GL_CALL(glDrawArrays(primitiveMappings[primitive], 0, count));
     }
 
     void gVertexArray::DrawArraysInstanced(PrimitiveType primitive, grm::u32 count, grm::u32 primcount) {
-        glDrawArraysInstanced(m_primitiveMap[primitive], 0, count, primcount);
+        glDrawArraysInstanced(primitiveMappings[primitive], 0, count, primcount);
     }
 
     void gVertexArray::bind() {
@@ -149,18 +166,6 @@ namespace grr {
         return m_vao;
     }
     
-    void gVertexArray::Release() {
-        m_instance = nullptr;
-
-        s_currentBuffer = 0;
-
-        m_bufferTypeMap.clear();
-
-        m_primitiveMap.clear();
-
-        m_bufferIndex.clear();
-    }
-
     void gVertexArray::Destroy(gVertexArray *target) {
         if (!target) {
             return;

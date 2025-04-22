@@ -20,6 +20,9 @@ namespace grr {
 
         int registry(const char *name, uint32_t count, UniformType type);
 
+        template <typename T>
+        void set_uniform(const char *name, const T &data);
+
         void setUniform(const char *name, const void *data);
 
         void setUniform(int id, const void *data);
@@ -50,6 +53,12 @@ namespace grr {
         bool valid;
 
     };
+
+    template <typename T>
+    inline void gShader::set_uniform(const char *name, const T &data)
+    {
+        return setUniform(name, &data);
+    }
 };
 
 
