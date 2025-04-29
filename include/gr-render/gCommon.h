@@ -24,12 +24,20 @@ using TextureID         =   std::uint32_t;
 
 using gTextureCubemapFace_  = std::uint32_t;
 
+// Shader
+using UniformID         = std::uint32_t;
+using ShaderID          = int;
+
+
 // ***** Renderbuffer ***** //
 using RenderbufferID = std::uint32_t;
 
 constexpr RenderbufferID InvalidRenderbufferID = std::numeric_limits<RenderbufferID>::max();
 
 constexpr TextureID InvalidTextureID = std::numeric_limits<TextureID>::max();
+
+constexpr UniformID InvalidUniformID = std::numeric_limits<UniformID>::max();
+constexpr ShaderID InvalidShaderID = std::numeric_limits<ShaderID>::max();
 
 enum BufferType : BufferType_
 {
@@ -120,7 +128,29 @@ enum gTextureCubemapFace : gTextureCubemapFace_
     gTextureCubemapFace_All     = gTextureFlags_Cubemap_Positive_X | gTextureFlags_Cubemap_Negative_X | gTextureFlags_Cubemap_Positive_Y | gTextureFlags_Cubemap_Negative_Y | gTextureFlags_Cubemap_Positive_Z | gTextureFlags_Cubemap_Negative_Z
 };
 
-namespace grr {
+using UniformVariable_ = std::uint8_t;
+
+typedef struct
+{
+    enum : UniformVariable_
+    {
+        NONE        = 0,
+        BOOL        = 1,
+        INT         = 2,
+        FLOAT       = 3,
+        VEC2        = 4,
+        VEC3        = 5,
+        VEC4        = 6,
+        MAT3        = 7,
+        MAT4        = 8,
+        SAMPLER2D   = 9,
+        SAMPLERCUBE = 10,
+        COUNT
+    };
+} UniformVariable;
+
+namespace grr
+{
     class gRenderbuffer;
     class gVertexArray;
     class gFramebuffer;
@@ -200,24 +230,11 @@ namespace grr {
         RenderbufferType_Stencil             = 1 << 7
     };
 
-    enum UniformType : uint16_t {
-        UniformType_none        = 1 << 0,
-        UniformType_bool        = 1 << 1,
-        UniformType_int         = 1 << 2,
-        UniformType_float       = 1 << 3,
-        UniformType_vec2        = 1 << 4,
-        UniformType_vec3        = 1 << 5,
-        UniformType_vec4        = 1 << 6,
-        UniformType_mat3        = 1 << 7,
-        UniformType_mat4        = 1 << 8,
-        UniformType_sampler2D   = 1 << 9,
-        UniformType_samplerCube = 1 << 10,
-    };
 
     typedef struct {
         char *name;
-        UniformType type;
-        int index;
+        UniformVariable_ variable;
+        UniformID index;
         uint32_t stride;
         void *data;
         bool dirty;

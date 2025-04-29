@@ -1,8 +1,7 @@
 #pragma once
 
 #include "gCommon.h"
-
-#include <memory>
+#include "shader.hpp"
 
 #include <stdint.h>
 
@@ -18,14 +17,14 @@ namespace grr {
 
         bool isValid() const;
 
-        int registry(const char *name, uint32_t count, UniformType type);
+        UniformID registry(const char *name, uint32_t count, UniformVariable_ variable);
 
         template <typename T>
-        void set_uniform(const char *name, const T &data);
+        bool set_uniform(const char *name, const T &data);
 
-        void setUniform(const char *name, const void *data);
+        bool setUniform(const char *name, const void *data);
 
-        void setUniform(int id, const void *data);
+        bool setUniform(UniformID id, const void *data);
 
         void flush();
         
@@ -39,23 +38,22 @@ namespace grr {
 
         size_t getUniformCount() const;
 
-        int findUniform(const char *name);
+        UniformID findUniform(const char *name);
 
-        const char *getName(int id) const;
+        const char *getName(UniformID id) const;
         
     private:
-        uint32_t programID;
+        ShaderID shaderID;
 
         Uniform *uniform_list;
 
         size_t numUniform;
 
         bool valid;
-
     };
 
     template <typename T>
-    inline void gShader::set_uniform(const char *name, const T &data)
+    inline bool gShader::set_uniform(const char *name, const T &data)
     {
         return setUniform(name, &data);
     }
