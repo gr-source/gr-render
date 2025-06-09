@@ -5,12 +5,18 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace grr {
-    gVertexArray::gVertexArray() : m_vao(0) {}
+namespace grr
+{
+    gVertexArray::gVertexArray() : vertexID(InvalidVertexID)
+    {
+        GL_CALL(glGenVertexArrays(1, &vertexID));
+    }
 
-    gVertexArray::~gVertexArray() {
-        if (m_vao) {
-            glDeleteVertexArrays(1, &m_vao);
+    gVertexArray::~gVertexArray()
+    {
+        if (vertexID != InvalidVertexID)
+        {
+            glDeleteVertexArrays(1, &vertexID);
         }
     }
 
@@ -36,15 +42,7 @@ namespace grr {
         GL_TRIANGLE_FAN
     };
 
-    std::unordered_map<grm::u32, grm::u32> gVertexArray::m_bufferIndex;
-
-    gVertexArray *gVertexArray::Create() {
-        gVertexArray* vertexArray = new gVertexArray();
-
-        GL_CALL(glGenVertexArrays(1, &vertexArray->m_vao));
-
-        return vertexArray;
-    }
+    std::unordered_map<BufferID, grm::u32> gVertexArray::m_bufferIndex;
 
     BufferID gVertexArray::CreateBuffer(BufferType_ target, const void *data, std::size_t size)
     {
@@ -52,7 +50,7 @@ namespace grr {
         GL_CALL(glGenBuffers(1, &bufferID));
         if (!bufferID)
         {
-            return 0;
+            return InvalidBufferID;
         }
 
         if (data != nullptr && size > 0)
@@ -119,7 +117,8 @@ namespace grr {
             break;
         }
         
-        while (size != arraySize) {
+        while (size != arraySize)
+        {
             GL_CALL(glBufferData(s_currentBuffer, size, nullptr, num));
 
             GL_CALL(glGetBufferParameteriv(s_currentBuffer, GL_BUFFER_SIZE,  &arraySize));
@@ -138,7 +137,8 @@ namespace grr {
         GL_CALL(glDrawElements(primitiveMappings[primitive], count, GL_UNSIGNED_INT, indices));
     }
 
-    void gVertexArray::DrawArrays(PrimitiveType primitive, grm::u32 count) {
+    void gVertexArray::DrawArrays(PrimitiveType primitive, grm::u32 count)
+    {
         GL_CALL(glDrawArrays(primitiveMappings[primitive], 0, count));
     }
 
@@ -146,34 +146,28 @@ namespace grr {
         glDrawArraysInstanced(primitiveMappings[primitive], 0, count, primcount);
     }
 
-    void gVertexArray::bind() {
-        GL_CALL(glBindVertexArray(m_vao));
+    void gVertexArray::bind()
+    {
+        GL_CALL(glBindVertexArray(vertexID));
 
         m_instance = this;
     }
 
-    void gVertexArray::unbind() {
+    void gVertexArray::unbind()
+    {
         glBindVertexArray(0);
 
         m_instance = nullptr;
     }
 
-    bool gVertexArray::isValid() const {
-        return m_vao;
+    bool gVertexArray::is_valid() const
+    {
+        return vertexID != InvalidVertexID;
     }
-    
-    grm::u32 gVertexArray::getID() const {
-        return m_vao;
-    }
-    
-    void gVertexArray::Destroy(gVertexArray *target) {
-        if (!target) {
-            return;
-        }
 
-        if (target->m_vao != -1) {
-            GL_CALL(glDeleteVertexArrays(1, &target->m_vao));
-        }
-        delete target;
+    const VertexID &gVertexArray::getID() const
+    {
+        return vertexID;
     }
+    
 } // namespace grr

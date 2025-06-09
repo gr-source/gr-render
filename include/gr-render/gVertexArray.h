@@ -6,14 +6,14 @@
 
 #define GR_MAX_BLOCK_BUFFER 1024
 
-namespace grr {
-    class gVertexArray {
+namespace grr
+{
+    class gVertexArray
+    {
     public:
         gVertexArray();
         ~gVertexArray();
         
-        static gVertexArray *Create();
-
         static BufferID CreateBuffer(BufferType_ target, const void *data = nullptr, std::size_t size = 0);
 
         static void DeleteBuffer(BufferID index);
@@ -42,12 +42,10 @@ namespace grr {
 
         void unbind();
 
-        bool isValid() const;
+        bool is_valid() const;
 
-        grm::u32 getID() const;
+        const VertexID &getID() const;
 
-        static void Destroy(gVertexArray *target);
-        
     private:
         static gVertexArray *m_instance;
 
@@ -57,8 +55,8 @@ namespace grr {
 
         static std::array<grm::u32, 7> primitiveMappings;
 
-        static std::unordered_map<grm::u32, grm::u32> m_bufferIndex;
+        static std::unordered_map<BufferID, grm::u32> m_bufferIndex;
 
-        grm::u32 m_vao;
+        VertexID vertexID;
     };
 } // namespace grr

@@ -28,9 +28,13 @@ using gTextureCubemapFace_  = std::uint32_t;
 using UniformID         = std::uint32_t;
 using ShaderID          = int;
 
+using RenderbufferID = std::uint32_t;
+
+using VertexID = std::uint32_t;
 
 // ***** Renderbuffer ***** //
-using RenderbufferID = std::uint32_t;
+
+constexpr BufferID InvalidBufferID = std::numeric_limits<BufferID>::max();
 
 constexpr RenderbufferID InvalidRenderbufferID = std::numeric_limits<RenderbufferID>::max();
 
@@ -38,6 +42,8 @@ constexpr TextureID InvalidTextureID = std::numeric_limits<TextureID>::max();
 
 constexpr UniformID InvalidUniformID = std::numeric_limits<UniformID>::max();
 constexpr ShaderID InvalidShaderID = std::numeric_limits<ShaderID>::max();
+
+constexpr VertexID InvalidVertexID = std::numeric_limits<VertexID>::max();
 
 enum BufferType : BufferType_
 {
