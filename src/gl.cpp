@@ -24,7 +24,7 @@ namespace grr {
     }
 
     void check_erros_opengl(const std::string &name, const std::string &file) {
-        grm::u32 numErrors = 0;
+        grm::uint32 numErrors = 0;
         GLenum err;
 
         std::ostringstream oss;
@@ -32,7 +32,7 @@ namespace grr {
         while ((err = glGetError()) != GL_NO_ERROR) {
             numErrors++;
             oss << file << " " << name << " - " << get_enum_name(err) << std::endl;
-            throw std::runtime_error(oss.str());
+            // throw std::runtime_error(oss.str());
         }
     }
 } // namespace grr

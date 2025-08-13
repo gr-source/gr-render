@@ -5,20 +5,20 @@
 namespace grr {
     class gTexture {
     public:
-        static void Unbind(grm::u32 index);
+        static void Unbind(grm::uint32 index);
 
         static gTexture *GetCurrent();
 
         gTexture();
         ~gTexture();
 
-        void updateBuffer(grm::u32 width, grm::u32 height, void* pixels);
+        void updateBuffer(grm::uint32 width, grm::uint32 height, void* pixels);
 
-        void bind(grm::u32 index);
+        void bind(grm::uint32 index);
 
         void unbind();
 
-        grm::u32 getTargetTexture() const;
+        grm::uint32 getTargetTexture() const;
 
         TextureID getTextureID() const;
 
@@ -45,15 +45,15 @@ namespace grr {
 
         static gTexture *s_current;
 
-        grm::u32 m_height;
+        grm::uint32 m_height;
         
-        grm::u32 m_width;
+        grm::uint32 m_width;
 
         TextureID textureID;
 
         TextureFlags_ texture_flags;
 
-        grm::u32 m_active;
+        grm::uint32 m_active;
 
         TextureFormat m_format;
 

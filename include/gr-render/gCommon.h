@@ -164,7 +164,7 @@ namespace grr
     class gRender;
     class gShader;
 
-    enum RenderState : grm::u64 {
+    enum RenderState : grm::uint64 {
         GR_FALSE               = 1 << 1,
         GR_TRUE                = 1 << 2,
         GR_BACKGROUND_COLOR    = 1 << 3,
@@ -207,7 +207,7 @@ namespace grr
         // GR_UNIFORM_BUFFER            = 1 << 13,
     };
 
-    enum gFramebufferFlags : grm::u32 {
+    enum gFramebufferFlags : grm::uint32 {
         gFramebufferFlags_Color_Attachiment0 = 1 << 0,
         gFramebufferFlags_Color_Attachiment1 = 1 << 1,
         gFramebufferFlags_Color_Attachiment2 = 1 << 2,

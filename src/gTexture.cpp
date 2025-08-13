@@ -31,7 +31,7 @@ namespace grr
 
     gTexture *gTexture::s_current = nullptr;
 
-    void gTexture::Unbind(grm::u32 index) {
+    void gTexture::Unbind(grm::uint32 index) {
         GL_CALL(glActiveTexture(GL_TEXTURE0 + index));
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
@@ -48,7 +48,7 @@ namespace grr
         set_filtering(gTextureFlags_Filter_Linear);
     }
 
-    void gTexture::updateBuffer(grm::u32 width, grm::u32 height, void *pixels)
+    void gTexture::updateBuffer(grm::uint32 width, grm::uint32 height, void *pixels)
     {
         m_width = width;
         m_height = height;
@@ -103,7 +103,7 @@ namespace grr
         glDeleteTextures(1, &textureID);
     }
 
-    void gTexture::bind(grm::u32 index) {
+    void gTexture::bind(grm::uint32 index) {
         m_active = GL_TEXTURE0 + index;
         
         GL_CALL(glActiveTexture(m_active));
@@ -118,7 +118,7 @@ namespace grr
         GL_CALL(glBindTexture(getTargetTexture(), 0));
     }
 
-    grm::u32 gTexture::getTargetTexture() const
+    grm::uint32 gTexture::getTargetTexture() const
     {
         return isCubemap() ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
     }

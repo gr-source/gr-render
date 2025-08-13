@@ -8,12 +8,12 @@
 #include "gl.h"
 
 namespace grr {
-    std::unordered_map<BufferBindingTarget, grm::u32> gRender::m_bufferMap {
+    std::unordered_map<BufferBindingTarget, grm::uint32> gRender::m_bufferMap {
         {BufferBindingTarget::GR_ARRAY_BUFFER, GL_ARRAY_BUFFER},
         {BufferBindingTarget::GR_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER}
     };
 
-    std::unordered_map<grm::u32, grm::u32> gRender::m_renderStateMap = {
+    std::unordered_map<grm::uint32, grm::uint32> gRender::m_renderStateMap = {
         {GR_DEPTH_ALWAYS, GL_ALWAYS},
         {GR_DEPTH_NEVER, GL_NEVER},
         {GR_DEPTH_LESS, GL_LESS},
@@ -35,7 +35,7 @@ namespace grr {
             break;
         }
         case GR_VIEWPORT: {
-            iVector2* size = (iVector2*)value;
+            Vector2 *size = (Vector2 *)value;
             GL_CALL(glViewport(0, 0, size->x, size->y));
             break;
         }
@@ -45,7 +45,7 @@ namespace grr {
         }
     }
 
-    void gRender::SetRenderState(RenderState state, grm::u32 value) {
+    void gRender::SetRenderState(RenderState state, grm::uint32 value) {
         switch (state) {
         case GR_BACKGROUND: {
             GLbitfield filter = 0;
