@@ -40,7 +40,7 @@ namespace grr
         return s_current;
     }
 
-    gTexture::gTexture() : m_width(0), m_height(0), textureID(InvalidTextureID), m_active(0), texture_flags(0), m_format(TextureFormat_RGB)
+    gTexture::gTexture() : m_width(0), m_height(0), textureID(InvalidID), m_active(0), texture_flags(0), m_format(TextureFormat_RGB)
     {
         set_format(TextureFormat_RGB);
         set_texture(gTextureFlags_Texture);
@@ -96,7 +96,7 @@ namespace grr
 
     gTexture::~gTexture()
     {
-        if (textureID == InvalidTextureID)
+        if (textureID == InvalidID)
         {
             return;
         }
@@ -130,7 +130,7 @@ namespace grr
 
     bool gTexture::isValid() const
     {
-        return textureID != InvalidTextureID;
+        return textureID != InvalidID;
     }
 
     bool gTexture::isCubemap() const

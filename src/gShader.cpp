@@ -7,23 +7,25 @@
 
 #include <string.h>
 
-grr::gShader::gShader() : shaderID(InvalidShaderID), valid(false), uniform_list((Uniform *)calloc(MAX_UNIFORM, sizeof(Uniform))), numUniform(0)
+grr::gShader::gShader() : shaderID(-1), valid(false), m_uniforms(nullptr), m_count(0)
 {
+    m_uniforms = ((Uniform *)malloc(sizeof(Uniform) * MAX_UNIFORM));
     for (size_t i=0;i<MAX_UNIFORM;i++)
     {
-        auto &uniform = uniform_list[i];
+        auto &uniform = m_uniforms[i];
 
         uniform.name = nullptr;
         uniform.data = nullptr;
-        uniform.index = InvalidUniformID;
+        uniform.index = InvalidID;
         uniform.dirty = false;
+        uniform.stride = 0;
     }
 }
 
 grr::gShader::~gShader()
 {
-    for (size_t i=0;i<numUniform;i++) {
-        Uniform &uniform = uniform_list[i];
+    for (size_t i=0;i<m_count;i++) {
+        Uniform &uniform = m_uniforms[i];
 
         if (uniform.data != NULL) {
             free(uniform.data);
@@ -33,8 +35,8 @@ grr::gShader::~gShader()
             free(uniform.name);
         }
     }
-    if (uniform_list) {
-        free(uniform_list);
+    if (m_uniforms) {
+        free(m_uniforms);
     }
 }
 
@@ -73,7 +75,7 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
     }
 
     // delete program
-    if (shaderID != InvalidShaderID)
+    if (shaderID != -1)
     {
         GL_CALL(glUseProgram(0));
         GL_CALL(glDeleteProgram(shaderID));
@@ -109,29 +111,29 @@ void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, 
 
 bool grr::gShader::isValid() const
 {
-    return valid && shaderID != InvalidShaderID;
+    return valid && shaderID != -1;
 }
 
 UniformID grr::gShader::registry(const char *name, uint32_t count, UniformVariable_ variable)
 {
     UniformID id = findUniform(name);
 
-    if (id != InvalidUniformID)
+    if (id != InvalidID)
     {
         return id;
     }
  
-    if (numUniform + 1 >= MAX_UNIFORM)
+    if (m_count + 1 >= MAX_UNIFORM)
     {
         error("%s, Max uniform exceded.", name);
-        return InvalidUniformID;
+        return InvalidID;
     }
 
     id = glGetUniformLocation(shaderID, name);
     if (id == -1)
     {
         error("%s, Uniform not found.", name);
-        return InvalidUniformID;
+        return InvalidID;
     }
 
     size_t stride = 0;
@@ -166,10 +168,10 @@ UniformID grr::gShader::registry(const char *name, uint32_t count, UniformVariab
             return -1;
     }
 
-    auto uniformID = numUniform;
-    numUniform++;
+    auto uniformID = m_count;
+    m_count++;
 
-    auto &uniform = uniform_list[uniformID];
+    auto &uniform = m_uniforms[uniformID];
     if (uniform.name != nullptr)
     {
         free(uniform.name);
@@ -194,7 +196,7 @@ UniformID grr::gShader::registry(const char *name, uint32_t count, UniformVariab
 bool grr::gShader::setUniform(const char *name, const void *data)
 {
     UniformID id = findUniform(name);
-    if (id == InvalidUniformID)
+    if (id == InvalidID)
     {
         return false;
     }
@@ -204,7 +206,7 @@ bool grr::gShader::setUniform(const char *name, const void *data)
 
 bool grr::gShader::setUniform(UniformID id, const void *data)
 {
-    auto &uniform = uniform_list[id];
+    auto &uniform = m_uniforms[id];
 
     if (data == NULL || memcpy(uniform.data, data, uniform.stride) == NULL)
     {
@@ -217,15 +219,12 @@ bool grr::gShader::setUniform(UniformID id, const void *data)
 
 void grr::gShader::flush()
 {
-    auto temp = numUniform;
-    while (temp--)
+    for (UniformID id =0;id<m_count;id++)
     {
-        auto& uniform = uniform_list[temp];
+        auto& uniform = m_uniforms[id];
 
         if (!uniform.dirty)
-        {
             continue;
-        }
 
         uniform.dirty = false;
 
@@ -273,7 +272,7 @@ void grr::gShader::unbind()
 
 void grr::gShader::cleanUniform() {
     for (size_t i=0;i<MAX_UNIFORM;i++) {
-        auto &uniform = uniform_list[i];
+        auto &uniform = m_uniforms[i];
         if (uniform.name != nullptr) {
             free(uniform.name);
             uniform.name = nullptr;
@@ -288,40 +287,40 @@ void grr::gShader::cleanUniform() {
         uniform.index = -1;
         uniform.dirty = false;
     }
-    numUniform = 0;
+    m_count = 0;
 }
 
 grr::Uniform *grr::gShader::getUniform() const
 {
-    return uniform_list;
+    return m_uniforms;
 }
 
 size_t grr::gShader::getUniformCount() const
 {
-    return numUniform;
+    return m_count;
 }
 
 UniformID grr::gShader::findUniform(const char *name)
 {
     for (size_t i=0;i<MAX_UNIFORM;i++)
     {
-        if (uniform_list[i].name == NULL)
+        if (m_uniforms[i].name == NULL)
         {
             continue;
         }
 
 
-        if (strcmp(uniform_list[i].name, name) == 0)
+        if (strcmp(m_uniforms[i].name, name) == 0)
         {
             return i;
         }
     }
-    return InvalidUniformID;
+    return InvalidID;
 }
 
 const char *grr::gShader::getName(UniformID id) const
 {
-    return id == InvalidUniformID ? NULL : uniform_list[id].name;
+    return id == InvalidID ? NULL : m_uniforms[id].name;
 }
 
 

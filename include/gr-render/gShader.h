@@ -45,9 +45,9 @@ namespace grr {
     private:
         ShaderID shaderID;
 
-        Uniform *uniform_list;
+        Uniform *m_uniforms;
 
-        size_t numUniform;
+        size_t m_count;
 
         bool valid;
     };

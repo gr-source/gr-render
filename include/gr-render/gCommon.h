@@ -14,36 +14,27 @@
 
 #define GR_ASSERT(msg) assert(false && msg)
 
-using BufferType_       =   std::size_t;
-using BufferID          =   std::uint32_t;
+using BufferType_       =       uint32_t;
+using BufferID          =       uint32_t;
 
-using PrimitiveType_    =   std::size_t;
+using PrimitiveType_    =       uint32_t;
 
-using TextureFlags_     =   std::uint32_t;
-using TextureID         =   std::uint32_t;
+using TextureFlags_     =       uint32_t;
+using TextureID         =       uint32_t;
 
-using gTextureCubemapFace_  = std::uint32_t;
+using gTextureCubemapFace_  =   uint32_t;
 
 // Shader
-using UniformID         = std::uint32_t;
-using ShaderID          = int;
+using UniformID         =       uint32_t;
+using ShaderID          =       int;
 
-using RenderbufferID = std::uint32_t;
+using RenderbufferID =          uint32_t;
 
-using VertexID = std::uint32_t;
+using VertexID =                uint32_t;
 
 // ***** Renderbuffer ***** //
 
-constexpr BufferID InvalidBufferID = std::numeric_limits<BufferID>::max();
-
-constexpr RenderbufferID InvalidRenderbufferID = std::numeric_limits<RenderbufferID>::max();
-
-constexpr TextureID InvalidTextureID = std::numeric_limits<TextureID>::max();
-
-constexpr UniformID InvalidUniformID = std::numeric_limits<UniformID>::max();
-constexpr ShaderID InvalidShaderID = std::numeric_limits<ShaderID>::max();
-
-constexpr VertexID InvalidVertexID = std::numeric_limits<VertexID>::max();
+constexpr uint32_t InvalidID = std::numeric_limits<uint32_t>::max();
 
 enum BufferType : BufferType_
 {

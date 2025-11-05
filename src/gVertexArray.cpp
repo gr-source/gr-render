@@ -7,14 +7,14 @@
 
 namespace grr
 {
-    gVertexArray::gVertexArray() : vertexID(InvalidVertexID)
+    gVertexArray::gVertexArray() : vertexID(InvalidID)
     {
         GL_CALL(glGenVertexArrays(1, &vertexID));
     }
 
     gVertexArray::~gVertexArray()
     {
-        if (vertexID != InvalidVertexID)
+        if (vertexID != InvalidID)
         {
             glDeleteVertexArrays(1, &vertexID);
         }
@@ -50,7 +50,7 @@ namespace grr
         GL_CALL(glGenBuffers(1, &bufferID));
         if (!bufferID)
         {
-            return InvalidBufferID;
+            return InvalidID;
         }
 
         if (data != nullptr && size > 0)
@@ -162,7 +162,7 @@ namespace grr
 
     bool gVertexArray::is_valid() const
     {
-        return vertexID != InvalidVertexID;
+        return vertexID != InvalidID;
     }
 
     const VertexID &gVertexArray::getID() const
