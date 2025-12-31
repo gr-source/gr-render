@@ -7,13 +7,21 @@
 #include "gError.h"
 #include "gl.h"
 
+static const GLenum GL_ENABLE_DISABLE_MAP[] = {
+    GL_CULL_FACE,           // índice 0
+    GL_DEPTH_TEST,          // índice 1
+    GL_MULTISAMPLE,         // índice 2
+    GL_FRAMEBUFFER_SRGB,    // índice 3
+    GL_BLEND                // índice 4
+};
+
 namespace grr {
-    std::unordered_map<BufferBindingTarget, grm::uint32> gRender::m_bufferMap {
+    std::unordered_map<BufferBindingTarget, u32> gRender::m_bufferMap {
         {BufferBindingTarget::GR_ARRAY_BUFFER, GL_ARRAY_BUFFER},
         {BufferBindingTarget::GR_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER}
     };
 
-    std::unordered_map<grm::uint32, grm::uint32> gRender::m_renderStateMap = {
+    std::unordered_map<u32, u32> gRender::m_renderStateMap = {
         {GR_DEPTH_ALWAYS, GL_ALWAYS},
         {GR_DEPTH_NEVER, GL_NEVER},
         {GR_DEPTH_LESS, GL_LESS},
@@ -26,26 +34,23 @@ namespace grr {
         {GR_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
     };
 
-    void gRender::SetRenderState(RenderState state, void *value)
+    void gRender::SetBackgroundColor(const Color &color)
     {
-        switch (state) {
-        case GR_BACKGROUND_COLOR: {
-            auto color = reinterpret_cast<Color *>(value);
-            GL_CALL(glClearColor(color->r, color->g, color->b, color->a));
-            break;
-        }
-        case GR_VIEWPORT: {
-            Vector2 *size = (Vector2 *)value;
-            GL_CALL(glViewport(0, 0, size->x, size->y));
-            break;
-        }
-        default:
-            std::cout << "Invalid V: " << getRenderStateName(state) << std::endl;
-            break;
-        }
+        GetInstance().setBackgroundColor(color);
     }
 
-    void gRender::SetRenderState(RenderState state, grm::uint32 value) {
+    void gRender::SetViewport(const Rect &bounds)
+    {
+        GetInstance().setViewport(bounds);
+    }
+
+    void gRender::SetEnable(GEnum state, bool value)
+    {
+        GetInstance().setEnable(state, value);
+    }
+
+    void gRender::SetRenderState(RenderState state, u32 value)
+    {
         switch (state) {
         case GR_BACKGROUND: {
             GLbitfield filter = 0;
@@ -57,12 +62,14 @@ namespace grr {
             }
             return GL_CALL(glClear(filter));
         }
+                            /*
         case GR_CULL_FACE: {
             if (value == GR_TRUE) {
                 return GL_CALL(glEnable(GL_CULL_FACE));
             }
             return GL_CALL(glDisable(GL_CULL_FACE));
         }
+        */
         case GR_CULL: {
             if ((value & GR_FRONT) == GR_FRONT && (value & GR_BACK) == GR_BACK) {
                 return GL_CALL(glCullFace(GL_FRONT_AND_BACK));
@@ -71,12 +78,14 @@ namespace grr {
             }
             return GL_CALL(glCullFace(GL_FRONT));
         }
+                      /*
         case GR_DEPTH: {
             if (value == GR_TRUE) {
                 return GL_CALL(glEnable(GL_DEPTH_TEST));
             }
             return GL_CALL(glDisable(GL_DEPTH_TEST));
         }
+                       */
         case GR_DEPTH_MASK: {
             GL_CALL(glDepthMask(m_renderStateMap[value]));
             break;
@@ -84,6 +93,7 @@ namespace grr {
         case GR_DEPTH_FUNC: {
             return GL_CALL(glDepthFunc(m_renderStateMap[value]));
         }
+                            /*
         case GR_MULTISAMPLE: {
             if (value == GR_TRUE) {
                 return glEnable(GL_MULTISAMPLE);
@@ -102,6 +112,7 @@ namespace grr {
             }
             return GL_CALL(glDisable(GL_BLEND));
         }
+                       */
         case GR_SRC_ALPHA: {
             glBlendFunc(GL_SRC_ALPHA, m_renderStateMap[value]);
             break;
@@ -116,16 +127,12 @@ namespace grr {
         switch (state) {
         GET_ENUM_NAME(GR_FALSE);
         GET_ENUM_NAME(GR_TRUE);
-        GET_ENUM_NAME(GR_BACKGROUND_COLOR);
         GET_ENUM_NAME(GR_BACKGROUND);
         GET_ENUM_NAME(GR_DEPTH_BUFFER);
         GET_ENUM_NAME(GR_COLOR_BUFFER);
-        GET_ENUM_NAME(GR_CULL_FACE);
         GET_ENUM_NAME(GR_CULL);
         GET_ENUM_NAME(GR_FRONT);
         GET_ENUM_NAME(GR_BACK);
-        GET_ENUM_NAME(GR_DEPTH);
-        GET_ENUM_NAME(GR_VIEWPORT);
         default:
             return "undefined";
         }
@@ -149,7 +156,62 @@ namespace grr {
         gFramebuffer::Release();
     }
 
-    // void gRender::GetPixelData() {
-    //     glReadPixels()
-    // }
+    gRender& gRender::GetInstance()
+    {
+        static gRender instance;
+        return instance;
+    }
+
+    gRender::gRender()
+        :
+            s_BackgroundColor(Color::black),
+            s_ViewportBounds{0.0f, 0.0f, 0.0f, 0.0f},
+            s_StateMask(0)
+    {}
+
+    void gRender::setBackgroundColor(const Color& color)
+    {
+        if (color.r != s_BackgroundColor.r || color.g != s_BackgroundColor.g || 
+            color.b != s_BackgroundColor.b || color.a != s_BackgroundColor.a) 
+        {
+            GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
+            s_BackgroundColor = color;
+        }
+    }
+
+    void gRender::setViewport(const Rect& bounds)
+    {
+        if (bounds.x != s_ViewportBounds.x || bounds.y != s_ViewportBounds.y || 
+            bounds.w != s_ViewportBounds.w || bounds.h != s_ViewportBounds.h)
+        {
+            GL_CALL(glViewport(bounds.x, bounds.y, bounds.w, bounds.h));
+            s_ViewportBounds = bounds;
+        }
+    }
+
+    void gRender::setEnable(GEnum state, bool value)
+    {
+        uint32_t bit = 1ULL << state;
+
+        uint8_t enabled = s_StateMask & bit;
+        if (enabled != value)
+        {
+            if (value)
+            {
+                s_StateMask |= bit;
+
+                glEnable(GL_ENABLE_DISABLE_MAP[state]);
+            } else
+            {
+                s_StateMask &= ~bit;
+
+                glDisable(GL_ENABLE_DISABLE_MAP[state]);
+            }
+        }
+    }
 }
+
+
+
+
+

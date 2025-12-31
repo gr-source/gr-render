@@ -3,12 +3,16 @@
 #include "gCommon.h"
 
 namespace grr {
-    class gRender {
+    class gRender
+    {
     public:
+        static void SetBackgroundColor(const Color& color);
 
-        static void SetRenderState(RenderState state, void* value);
+        static void SetViewport(const Rect& bounds);
 
-        static void SetRenderState(RenderState state, grm::uint32 value);
+        static void SetEnable(GEnum state, bool value);
+
+        static void SetRenderState(RenderState state, u32 value);
 
         static std::string getRenderStateName(RenderState state);
 
@@ -17,8 +21,26 @@ namespace grr {
         static void Release();
 
     private:
-        static std::unordered_map<BufferBindingTarget, grm::uint32> m_bufferMap;
+        static std::unordered_map<BufferBindingTarget, u32> m_bufferMap;
 
-        static std::unordered_map<grm::uint32, grm::uint32> m_renderStateMap;
+        static std::unordered_map<u32, u32> m_renderStateMap;
+
+        static gRender& GetInstance();
+
+        // fields
+        Color s_BackgroundColor;
+
+        Rect s_ViewportBounds;
+
+        u32 s_StateMask;
+
+        // methods
+        gRender();
+
+        void setBackgroundColor(const Color& color);
+
+        void setViewport(const Rect& bounds);
+
+        void setEnable(GEnum state, bool value);
     };
 }

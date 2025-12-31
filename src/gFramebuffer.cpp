@@ -7,9 +7,9 @@
 #include <cassert>
 
 namespace grr {
-    grm::uint32 gFramebuffer::s_current = 0;
+    u32 gFramebuffer::s_current = 0;
 
-    std::unordered_map<gFramebufferFlags, grm::uint32> gFramebuffer::m_apiFramebuffer{
+    std::unordered_map<gFramebufferFlags, u32> gFramebuffer::m_apiFramebuffer{
         {gFramebufferFlags_Color_Attachiment0, GL_COLOR_ATTACHMENT0},
         {gFramebufferFlags_Color_Attachiment1, GL_COLOR_ATTACHMENT1},
         {gFramebufferFlags_Color_Attachiment2, GL_COLOR_ATTACHMENT2},
@@ -26,13 +26,13 @@ namespace grr {
         {gFramebufferFlags_Texture,            GL_TEXTURE_2D}
     };
 
-    grm::uint32 gFramebuffer::Create() {
-        grm::uint32 id;
+    u32 gFramebuffer::Create() {
+        u32 id;
         GL_CALL(glCreateFramebuffers(1, &id));
         return id;
     }
 
-    void gFramebuffer::Bind(grm::uint32 id) {
+    void gFramebuffer::Bind(u32 id) {
         GL_CALL(glBindFramebuffer(GL_FRAMEBUFFER, id));
 
         s_current = id;
@@ -54,7 +54,7 @@ namespace grr {
         s_current = 0;
     }
 
-    void gFramebuffer::Destroy(grm::uint32 id) {
+    void gFramebuffer::Destroy(u32 id) {
         if (!id) {
             return;
         }
@@ -62,7 +62,7 @@ namespace grr {
         GL_CALL(glDeleteFramebuffers(1, &id));
     }
 
-    void gFramebuffer::GetPixels(grm::uint8 attachmentID, int x, int y, grm::uint32 width, grm::uint32 height, TextureFormat format, void *pixels) {
+    void gFramebuffer::GetPixels(u8 attachmentID, int x, int y, u32 width, u32 height, TextureFormat format, void *pixels) {
         GL_CALL(glBindFramebuffer(GL_READ_FRAMEBUFFER, s_current));
         GL_CALL(glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentID));
 

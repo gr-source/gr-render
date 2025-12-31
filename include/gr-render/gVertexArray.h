@@ -18,25 +18,25 @@ namespace grr
 
         static void DeleteBuffer(BufferID index);
 
-        static void Bind(grm::uint32 index);
+        static void Bind(u32 index);
 
-        static void SetAttrib(grm::uint8 index, grm::uint16 size, grm::uint16 stride, const void* pointer);
+        static void SetAttrib(u8 index, u16 size, u16 stride, const void* pointer);
 
-        static void SetAttribI(grm::uint8 index, grm::uint16 size, grm::uint16 stride, const void* pointer);
+        static void SetAttribI(u8 index, u16 size, u16 stride, const void* pointer);
 
-        static void SetAttribDivisor(grm::uint8 index, grm::uint8 divisor);
+        static void SetAttribDivisor(u8 index, u8 divisor);
 
-        static void UpdateResizeBuffer(grm::uint32 size, BufferUsage usage);
+        static void UpdateResizeBuffer(u32 size, BufferUsage usage);
 
-        static void SetBufferUpdate(grm::uint32 offset, grm::uint32 size, const void* data);
+        static void SetBufferUpdate(u32 offset, u32 size, const void* data);
 
-        static void DrawElements(PrimitiveType primitive, grm::uint32 count, const void* indices);
+        static void DrawElements(PrimitiveType primitive, u32 count, const void* indices);
 
-        static void DrawElementsInstanced(PrimitiveType primitive, grm::uint32 count, const void* indices, grm::uint32 primcount);
+        static void DrawElementsInstanced(PrimitiveType primitive, u32 count, const void* indices, u32 primcount);
 
-        static void DrawArrays(PrimitiveType primitive, grm::uint32 count);
+        static void DrawArrays(PrimitiveType primitive, u32 count);
 
-        static void DrawArraysInstanced(PrimitiveType primitive, grm::uint32 count, grm::uint32 primcount);
+        static void DrawArraysInstanced(PrimitiveType primitive, u32 count, u32 primcount);
 
         void bind();
 
@@ -49,13 +49,13 @@ namespace grr
     private:
         static gVertexArray *m_instance;
 
-        static grm::uint32 s_currentBuffer;
+        static u32 s_currentBuffer;
 
         static std::array<std::uint32_t, 5> bufferMappings;
 
-        static std::array<grm::uint32, 7> primitiveMappings;
+        static std::array<u32, 7> primitiveMappings;
 
-        static std::unordered_map<BufferID, grm::uint32> m_bufferIndex;
+        static std::unordered_map<BufferID, u32> m_bufferIndex;
 
         VertexID vertexID;
     };

@@ -20,7 +20,7 @@ using BufferID          =       uint32_t;
 using PrimitiveType_    =       uint32_t;
 
 using TextureFlags_     =       uint32_t;
-using TextureID         =       uint32_t;
+typedef u32 TextureID;
 
 using gTextureCubemapFace_  =   uint32_t;
 
@@ -146,6 +146,16 @@ typedef struct
     };
 } UniformVariable;
 
+
+// SetEnable
+#define GR_CULL_FACE            0
+#define GR_DEPTH                1
+#define GR_MULTISAMPLE          2
+#define GR_FRAMEBUFFER_SRGB     3
+#define GR_BLEND                4
+
+typedef uint32_t GEnum;
+
 namespace grr
 {
     class gRenderbuffer;
@@ -155,19 +165,15 @@ namespace grr
     class gRender;
     class gShader;
 
-    enum RenderState : grm::uint64 {
+    enum RenderState : u64 {
         GR_FALSE               = 1 << 1,
         GR_TRUE                = 1 << 2,
-        GR_BACKGROUND_COLOR    = 1 << 3,
         GR_BACKGROUND          = 1 << 4,
         GR_DEPTH_BUFFER        = 1 << 5,
         GR_COLOR_BUFFER        = 1 << 6,
-        GR_CULL_FACE           = 1 << 7,
         GR_CULL                = 1 << 8,
         GR_FRONT               = 1 << 9,
         GR_BACK                = 1 << 10,
-        GR_VIEWPORT            = 1 << 11,
-        GR_DEPTH               = 1 << 12,
         GR_DEPTH_MASK          = 1 << 13,
         GR_DEPTH_FUNC          = 1 << 14,
         GR_DEPTH_ALWAYS        = 1 << 15,
@@ -178,9 +184,6 @@ namespace grr
         GR_DEPTH_GREATER       = 1 << 20,
         GR_DEPTH_NOTEQUAL      = 1 << 21,
         GR_DEPTH_GEQUAL        = 1 << 22,
-        GR_MULTISAMPLE         = 1 << 23,
-        GR_FRAMEBUFFER_SRGB    = 1 << 24,
-        GR_BLEND               = 1 << 25,
         GR_SRC_ALPHA           = 1 << 26,
         GR_ONE_MINUS_SRC_ALPHA = 1 << 27
     };
@@ -198,7 +201,7 @@ namespace grr
         // GR_UNIFORM_BUFFER            = 1 << 13,
     };
 
-    enum gFramebufferFlags : grm::uint32 {
+    enum gFramebufferFlags : u32 {
         gFramebufferFlags_Color_Attachiment0 = 1 << 0,
         gFramebufferFlags_Color_Attachiment1 = 1 << 1,
         gFramebufferFlags_Color_Attachiment2 = 1 << 2,
