@@ -41,10 +41,8 @@ namespace grr {
     void gFramebuffer::SetRenderbuffer(gFramebufferFlags attachment) {
     }
 
-    void gFramebuffer::SetTexture(gFramebufferFlags attachment, gFramebufferFlags textarget) {
-        auto texture = grr::gTexture::GetCurrent();
-        assert(texture != nullptr && "Invalid texture");
-
+    void gFramebuffer::SetTexture(grr::gTexture* texture, gFramebufferFlags attachment, gFramebufferFlags textarget)
+    {
         GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, m_apiFramebuffer[attachment], m_apiFramebuffer[textarget], texture->getTextureID(), 0));
     }
 
@@ -71,9 +69,6 @@ namespace grr {
             case TextureFormat_SRGB:
             case TextureFormat_RGB888:
                 GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels));
-                break;
-            case TextureFormat_RGB332:
-                GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pixels));
                 break;
             case TextureFormat_RGB565:
                 GL_CALL(glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels));

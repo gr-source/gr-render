@@ -21,6 +21,7 @@ using PrimitiveType_    =       uint32_t;
 
 using TextureFlags_     =       uint32_t;
 typedef u32 TextureID;
+typedef u32 TextureFlags;
 
 using gTextureCubemapFace_  =   uint32_t;
 
@@ -61,11 +62,10 @@ enum PrimitiveType : PrimitiveType_
     TRIANGLES_FAN       = 6
 };
 
-enum TextureFormat : std::uint16_t
+enum TextureFormat : u16
 {
     TextureFormat_RGB            = 0,
     TextureFormat_SRGB           = 1,
-    TextureFormat_RGB332         = 2,
     TextureFormat_RGB444         = 3,
     TextureFormat_RGB565         = 4,
     TextureFormat_RGB888         = 5,

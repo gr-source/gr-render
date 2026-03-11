@@ -2,8 +2,10 @@
 
 #include "gRenderbuffer.h"
 
-namespace grr {
-    class gFramebuffer {
+namespace grr
+{
+    class gFramebuffer
+    {
     public:
         static u32 Create();
 
@@ -11,7 +13,7 @@ namespace grr {
 
         static void SetRenderbuffer(gFramebufferFlags attachment);
 
-        static void SetTexture(gFramebufferFlags attachment, gFramebufferFlags textarget = gFramebufferFlags_Texture);
+        static void SetTexture(grr::gTexture* texture, gFramebufferFlags attachment, gFramebufferFlags textarget = gFramebufferFlags_Texture);
 
         static void Unbind();
 

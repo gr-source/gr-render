@@ -8,11 +8,11 @@
 #include "gl.h"
 
 static const GLenum GL_ENABLE_DISABLE_MAP[] = {
-    GL_CULL_FACE,           // índice 0
-    GL_DEPTH_TEST,          // índice 1
-    GL_MULTISAMPLE,         // índice 2
-    GL_FRAMEBUFFER_SRGB,    // índice 3
-    GL_BLEND                // índice 4
+    GL_CULL_FACE,
+    GL_DEPTH_TEST,
+    GL_MULTISAMPLE,
+    GL_FRAMEBUFFER_SRGB,
+    GL_BLEND
 };
 
 namespace grr {
@@ -62,14 +62,6 @@ namespace grr {
             }
             return GL_CALL(glClear(filter));
         }
-                            /*
-        case GR_CULL_FACE: {
-            if (value == GR_TRUE) {
-                return GL_CALL(glEnable(GL_CULL_FACE));
-            }
-            return GL_CALL(glDisable(GL_CULL_FACE));
-        }
-        */
         case GR_CULL: {
             if ((value & GR_FRONT) == GR_FRONT && (value & GR_BACK) == GR_BACK) {
                 return GL_CALL(glCullFace(GL_FRONT_AND_BACK));
@@ -78,14 +70,6 @@ namespace grr {
             }
             return GL_CALL(glCullFace(GL_FRONT));
         }
-                      /*
-        case GR_DEPTH: {
-            if (value == GR_TRUE) {
-                return GL_CALL(glEnable(GL_DEPTH_TEST));
-            }
-            return GL_CALL(glDisable(GL_DEPTH_TEST));
-        }
-                       */
         case GR_DEPTH_MASK: {
             GL_CALL(glDepthMask(m_renderStateMap[value]));
             break;
@@ -93,26 +77,6 @@ namespace grr {
         case GR_DEPTH_FUNC: {
             return GL_CALL(glDepthFunc(m_renderStateMap[value]));
         }
-                            /*
-        case GR_MULTISAMPLE: {
-            if (value == GR_TRUE) {
-                return glEnable(GL_MULTISAMPLE);
-            }
-            return glDisable(GL_MULTISAMPLE);
-        }
-        case GR_FRAMEBUFFER_SRGB: {
-            if (value == GR_TRUE) {
-                return GL_CALL(glEnable(GL_FRAMEBUFFER_SRGB));
-            }
-            return GL_CALL(glDisable(GL_FRAMEBUFFER_SRGB));
-        }
-        case GR_BLEND: {
-            if (value == GR_TRUE) {
-                return GL_CALL(glEnable(GL_BLEND));
-            }
-            return GL_CALL(glDisable(GL_BLEND));
-        }
-                       */
         case GR_SRC_ALPHA: {
             glBlendFunc(GL_SRC_ALPHA, m_renderStateMap[value]);
             break;
