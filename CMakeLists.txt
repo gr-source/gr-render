@@ -8,7 +8,17 @@ option(GR_COMPILE_STATIC_LIBRARY "Compile Static Library" OFF)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
+set(PLATFORM_OPENGL
+    src/platform/opengl/opengl_vertex_buffer.cpp
+    src/platform/opengl/opengl_index_buffer.cpp
+    src/platform/opengl/opengl_vertex_array.cpp
+)
+
 set(render_src
+    src/vertex_buffer.cpp
+    src/index_buffer.cpp
+    src/vertex_array.cpp
+
     src/gRenderbuffer.cpp
     src/gFramebuffer.cpp
     src/gVertexArray.cpp
@@ -21,21 +31,10 @@ set(render_src
     src/gl.cpp
 )
 
-set(render_hdr
-    include/${PROJECT_NAME}/gRenderbuffer.h
-    include/${PROJECT_NAME}/gFramebuffer.h
-    include/${PROJECT_NAME}/gVertexArray.h
-    include/${PROJECT_NAME}/gTexture.h
-    include/${PROJECT_NAME}/gRender.h
-    include/${PROJECT_NAME}/gShader.h
-    include/${PROJECT_NAME}/gCommon.h
-    include/${PROJECT_NAME}/gError.h
-)
-
 if(GR_COMPILE_STATIC_LIBRARY)
-    add_library(${PROJECT_NAME} STATIC ${render_src} ${render_hdr})
+    add_library(${PROJECT_NAME} STATIC ${render_src} ${PLATFORM_OPENGL})
 else()
-    add_library(${PROJECT_NAME} SHARED ${render_src} ${render_hdr})
+    add_library(${PROJECT_NAME} SHARED ${render_src} ${PLATFORM_OPENGL})
 endif()
 unset(GR_COMPILE_STATIC_LIBRARY CACHE)
 
