@@ -3,7 +3,7 @@
 
 namespace grr
 {
-    gRenderbuffer::gRenderbuffer() : renderbufferID(InvalidID)
+    gRenderbuffer::gRenderbuffer() : renderbufferID(GR_INVALID_ID)
     {}
 
     gRenderbuffer::~gRenderbuffer()

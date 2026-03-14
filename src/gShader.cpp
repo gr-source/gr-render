@@ -5,39 +5,24 @@
 
 #include "gError.h"
 
+#include <cstddef>
 #include <string.h>
 
-grr::gShader::gShader() : shaderID(-1), valid(false), m_uniforms(nullptr), m_count(0)
-{
-    m_uniforms = ((Uniform *)malloc(sizeof(Uniform) * MAX_UNIFORM));
-    for (size_t i=0;i<MAX_UNIFORM;i++)
-    {
-        auto &uniform = m_uniforms[i];
-
-        uniform.name = nullptr;
-        uniform.data = nullptr;
-        uniform.index = InvalidID;
-        uniform.dirty = false;
-        uniform.stride = 0;
-    }
-}
+grr::gShader::gShader() : shaderID(GR_INVALID_ID), valid(false), m_uniforms(nullptr), m_count(0), m_capacity(0)
+{}
 
 grr::gShader::~gShader()
 {
-    for (size_t i=0;i<m_count;i++) {
-        Uniform &uniform = m_uniforms[i];
+    for (size_t i=0;i<m_count;i++)
+    {
+        ShaderUniform &uniform = m_uniforms[i];
 
-        if (uniform.data != NULL) {
-            free(uniform.data);
-        }
-
-        if (uniform.name != NULL) {
+        if (uniform.name != NULL)
             free(uniform.name);
-        }
     }
-    if (m_uniforms) {
+
+    if (m_uniforms != nullptr)
         free(m_uniforms);
-    }
 }
 
 void grr::gShader::build(const char **fragment, int nfrag, const char **vertex, int nvert) {
@@ -114,53 +99,44 @@ bool grr::gShader::isValid() const
     return valid && shaderID != -1;
 }
 
-UniformID grr::gShader::registry(const char *name, uint32_t count, UniformVariable_ variable)
+UniformID grr::gShader::registry(const char *name, uint32_t count, UniformType type)
 {
     UniformID id = findUniform(name);
-
-    if (id != InvalidID)
-    {
+    if (id != GR_INVALID_ID)
         return id;
-    }
  
-    if (m_count + 1 >= MAX_UNIFORM)
-    {
-        error("%s, Max uniform exceded.", name);
-        return InvalidID;
-    }
+    if (m_count >= m_capacity)
+        reallocate();
 
-    id = glGetUniformLocation(shaderID, name);
-    if (id == -1)
-    {
-        error("%s, Uniform not found.", name);
-        return InvalidID;
-    }
+    int location = glGetUniformLocation(shaderID, name);
+    if (location == -1)
+        return GR_INVALID_ID;
 
     size_t stride = 0;
-    switch (variable)
+    switch (type)
     {
-        case UniformVariable::SAMPLERCUBE:
-        case UniformVariable::SAMPLER2D:
-        case UniformVariable::BOOL:
-        case UniformVariable::INT:
+        case UniformType::SAMPLERCUBE:
+        case UniformType::SAMPLER2D:
+        case UniformType::BOOL:
+        case UniformType::INT:
             stride = count * sizeof(GLint);
             break;
-        case UniformVariable::FLOAT:
+        case UniformType::FLOAT:
             stride = count * sizeof(GLfloat);
             break;
-        case UniformVariable::VEC2:
+        case UniformType::VEC2:
             stride = count * sizeof(Vector2);
             break;
-        case UniformVariable::VEC3:
+        case UniformType::VEC3:
             stride = count * sizeof(Vector3);
             break;
-        case UniformVariable::VEC4:
+        case UniformType::VEC4:
             stride = count * sizeof(Vector4);
             break;
-        case UniformVariable::MAT3:
+        case UniformType::MAT3:
             stride = count * sizeof(Matrix3x3);
             break;
-        case UniformVariable::MAT4:
+        case UniformType::MAT4:
             stride = count * sizeof(Matrix4x4);
             break;
         default:
@@ -168,95 +144,58 @@ UniformID grr::gShader::registry(const char *name, uint32_t count, UniformVariab
             return -1;
     }
 
-    auto uniformID = m_count;
-    m_count++;
+    UniformID uniformID = m_count++;
 
     auto &uniform = m_uniforms[uniformID];
-    if (uniform.name != nullptr)
-    {
-        free(uniform.name);
-    }
-
     uniform.name = strdup(name);
-    uniform.index = id;
-    uniform.data = nullptr;
-    uniform.variable = variable;
-    uniform.dirty = false;
+    uniform.id = location;
+    uniform.type = type;
     uniform.stride = stride;
-    if (uniform.data != nullptr)
-    {
-        free(uniform.data);
-    }
-    
-    uniform.data = malloc(stride);
 
     return uniformID;
 }
 
-bool grr::gShader::setUniform(const char *name, const void *data)
+void grr::gShader::setUniform(const char *name, const void *data)
 {
     UniformID id = findUniform(name);
-    if (id == InvalidID)
-    {
-        return false;
-    }
+    if (id == GR_INVALID_ID)
+        return;
 
-    return setUniform(id, data);
+    return SetUniform(id, data);
 }
 
-bool grr::gShader::setUniform(UniformID id, const void *data)
+void grr::gShader::SetUniform(UniformID id, const void *data)
 {
     auto &uniform = m_uniforms[id];
 
-    if (data == NULL || memcpy(uniform.data, data, uniform.stride) == NULL)
+    switch (uniform.type)
     {
-        return false;
-    }
-
-    uniform.dirty = true;
-    return true;
-}
-
-void grr::gShader::flush()
-{
-    for (UniformID id =0;id<m_count;id++)
-    {
-        auto& uniform = m_uniforms[id];
-
-        if (!uniform.dirty)
-            continue;
-
-        uniform.dirty = false;
-
-        switch (uniform.variable)
-        {
-            case UniformVariable::SAMPLERCUBE:
-            case UniformVariable::SAMPLER2D:
-            case UniformVariable::BOOL:
-            case UniformVariable::INT:
-                GL_CALL(glUniform1iv(uniform.index, (uniform.stride / sizeof(GLint)), (const GLint *)uniform.data));
-                break;
-            case UniformVariable::FLOAT:
-                GL_CALL(glUniform1fv(uniform.index, (uniform.stride / sizeof(GLfloat)), (const GLfloat *)uniform.data));
-                break;
-            case UniformVariable::VEC2:
-                GL_CALL(glUniform2fv(uniform.index, (uniform.stride / sizeof(Vector2)), (const GLfloat *)uniform.data));
-                break;
-            case UniformVariable::VEC3:
-                GL_CALL(glUniform3fv(uniform.index, (uniform.stride / sizeof(Vector3)), (const GLfloat *)uniform.data));
-                break;
-            case UniformVariable::VEC4:
-                GL_CALL(glUniform4fv(uniform.index, (uniform.stride / sizeof(Vector4)), (const GLfloat *)uniform.data));
-                break;
-            case UniformVariable::MAT3:
-                GL_CALL(glUniformMatrix3fv(uniform.index, (uniform.stride / sizeof(Matrix3x3)), GL_FALSE, (const GLfloat *)uniform.data));
-                break;
-            case UniformVariable::MAT4:
-                GL_CALL(glUniformMatrix4fv(uniform.index, (uniform.stride / sizeof(Matrix4x4)), GL_FALSE, (const GLfloat *)uniform.data));
-                break;
-            default:
-                break;
-        }
+        case UniformType::SAMPLERCUBE:
+        case UniformType::SAMPLER2D:
+        case UniformType::BOOL:
+        case UniformType::INT:
+            GL_CALL(glUniform1iv(uniform.id, (uniform.stride / sizeof(GLint)), (const GLint *)data));
+            break;
+        case UniformType::FLOAT:
+            GL_CALL(glUniform1fv(uniform.id, (uniform.stride / sizeof(GLfloat)), (const GLfloat *)data));
+            break;
+        case UniformType::VEC2:
+            GL_CALL(glUniform2fv(uniform.id, (uniform.stride / sizeof(Vector2)), (const GLfloat *)data));
+            break;
+        case UniformType::VEC3:
+            GL_CALL(glUniform3fv(uniform.id, (uniform.stride / sizeof(Vector3)), (const GLfloat *)data));
+            break;
+        case UniformType::VEC4:
+            GL_CALL(glUniform4fv(uniform.id, (uniform.stride / sizeof(Vector4)), (const GLfloat *)data));
+            break;
+        case UniformType::MAT3:
+            GL_CALL(glUniformMatrix3fv(uniform.id, (uniform.stride / sizeof(Matrix3x3)), GL_FALSE, (const GLfloat *)data));
+            break;
+        case UniformType::MAT4:
+            GL_CALL(glUniformMatrix4fv(uniform.id, (uniform.stride / sizeof(Matrix4x4)), GL_FALSE, (const GLfloat *)data));
+            break;
+        default:
+            break;
     }
 }
 
@@ -270,29 +209,9 @@ void grr::gShader::unbind()
     glUseProgram(0);
 }
 
-void grr::gShader::cleanUniform() {
-    for (size_t i=0;i<MAX_UNIFORM;i++) {
-        auto &uniform = m_uniforms[i];
-        if (uniform.name != nullptr) {
-            free(uniform.name);
-            uniform.name = nullptr;
-        }
-
-        if (uniform.data != nullptr) {
-            free(uniform.data);
-            uniform.data = nullptr;
-        }
-        uniform.stride = 0;
-
-        uniform.index = -1;
-        uniform.dirty = false;
-    }
-    m_count = 0;
-}
-
-grr::Uniform *grr::gShader::getUniform() const
+grr::ShaderUniform *grr::gShader::GetUniform(UniformID id) const
 {
-    return m_uniforms;
+    return m_uniforms + id;
 }
 
 size_t grr::gShader::getUniformCount() const
@@ -302,25 +221,27 @@ size_t grr::gShader::getUniformCount() const
 
 UniformID grr::gShader::findUniform(const char *name)
 {
-    for (size_t i=0;i<MAX_UNIFORM;i++)
+    for (size_t i=0;i<m_count;i++)
     {
-        if (m_uniforms[i].name == NULL)
-        {
-            continue;
-        }
-
-
         if (strcmp(m_uniforms[i].name, name) == 0)
-        {
             return i;
-        }
     }
-    return InvalidID;
+    return GR_INVALID_ID;
 }
 
-const char *grr::gShader::getName(UniformID id) const
+void grr::gShader::reallocate()
 {
-    return id == InvalidID ? NULL : m_uniforms[id].name;
+    if (m_capacity)
+    {
+        m_capacity *= 2;
+
+        m_uniforms = (ShaderUniform*)realloc(m_uniforms, m_capacity * sizeof(ShaderUniform));
+    } else
+    {
+        m_capacity = 1;
+
+        m_uniforms = (ShaderUniform*)malloc(m_capacity * sizeof(ShaderUniform));
+    }
 }
 
 

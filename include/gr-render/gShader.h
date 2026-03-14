@@ -5,10 +5,10 @@
 
 #include <stdint.h>
 
-#define MAX_UNIFORM 200
-
-namespace grr {
-    class gShader {
+namespace grr
+{
+    class gShader
+    {
     public:
         gShader();
         ~gShader();
@@ -17,45 +17,43 @@ namespace grr {
 
         bool isValid() const;
 
-        UniformID registry(const char *name, uint32_t count, UniformVariable_ variable);
+        UniformID registry(const char *name, uint32_t count, UniformType type);
 
         template <typename T>
-        bool set_uniform(const char *name, const T &data);
+        void set_uniform(const char *name, const T &data);
 
-        bool setUniform(const char *name, const void *data);
+        void setUniform(const char *name, const void *data);
 
-        bool setUniform(UniformID id, const void *data);
+        void SetUniform(UniformID id, const void *data);
 
-        void flush();
-        
         void bind();
 
         void unbind();
 
-        void cleanUniform();
-
-        Uniform *getUniform() const;
+        ShaderUniform *GetUniform(UniformID id) const;
 
         size_t getUniformCount() const;
 
         UniformID findUniform(const char *name);
 
-        const char *getName(UniformID id) const;
-        
     private:
         ShaderID shaderID;
 
-        Uniform *m_uniforms;
+        ShaderUniform *m_uniforms;
+
+        size_t m_capacity;
 
         size_t m_count;
 
         bool valid;
+
+        void reallocate();
     };
 
     template <typename T>
-    inline bool gShader::set_uniform(const char *name, const T &data)
+    inline void gShader::set_uniform(const char *name, const T &data)
     {
-        return setUniform(name, &data);
+        setUniform(name, &data);
     }
 };
 

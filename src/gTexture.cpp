@@ -206,7 +206,7 @@ namespace grr
         GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
     }
 
-    gTexture::gTexture() : m_width(0), m_height(0), textureID(InvalidID), m_active(0), texture_flags(0), m_format(TextureFormat_RGB)
+    gTexture::gTexture() : m_width(0), m_height(0), textureID(GR_INVALID_ID), m_active(0), texture_flags(0), m_format(TextureFormat_RGB)
     {
         set_format(TextureFormat_RGB);
         set_texture(gTextureFlags_Texture);
@@ -262,7 +262,7 @@ namespace grr
 
     gTexture::~gTexture()
     {
-        if (textureID == InvalidID)
+        if (textureID == GR_INVALID_ID)
             return;
         glDeleteTextures(1, &textureID);
     }
@@ -292,7 +292,7 @@ namespace grr
 
     bool gTexture::isValid() const
     {
-        return textureID != InvalidID;
+        return textureID != GR_INVALID_ID;
     }
 
     bool gTexture::isCubemap() const

@@ -20,22 +20,24 @@ using BufferID          =       uint32_t;
 using PrimitiveType_    =       uint32_t;
 
 using TextureFlags_     =       uint32_t;
-typedef u32 TextureID;
+
+typedef uint32_t TextureID;
 typedef u32 TextureFlags;
 
 using gTextureCubemapFace_  =   uint32_t;
 
 // Shader
-using UniformID         =       uint32_t;
-using ShaderID          =       int;
+typedef uint32_t UniformID;
 
-using RenderbufferID =          uint32_t;
+typedef uint32_t ShaderID;
 
-using VertexID =                uint32_t;
+typedef uint32_t RenderbufferID;
+
+typedef uint32_t VertexID;
 
 // ***** Renderbuffer ***** //
 
-constexpr uint32_t InvalidID = std::numeric_limits<uint32_t>::max();
+#define GR_INVALID_ID (uint32_t)-1
 
 enum BufferType : BufferType_
 {
@@ -125,26 +127,19 @@ enum gTextureCubemapFace : gTextureCubemapFace_
     gTextureCubemapFace_All     = gTextureFlags_Cubemap_Positive_X | gTextureFlags_Cubemap_Negative_X | gTextureFlags_Cubemap_Positive_Y | gTextureFlags_Cubemap_Negative_Y | gTextureFlags_Cubemap_Positive_Z | gTextureFlags_Cubemap_Negative_Z
 };
 
-using UniformVariable_ = std::uint8_t;
-
-typedef struct
+enum class UniformType
 {
-    enum : UniformVariable_
-    {
-        NONE        = 0,
-        BOOL        = 1,
-        INT         = 2,
-        FLOAT       = 3,
-        VEC2        = 4,
-        VEC3        = 5,
-        VEC4        = 6,
-        MAT3        = 7,
-        MAT4        = 8,
-        SAMPLER2D   = 9,
-        SAMPLERCUBE = 10,
-        COUNT
-    };
-} UniformVariable;
+    BOOL,
+    INT,
+    FLOAT,
+    VEC2,
+    VEC3,
+    VEC4,
+    MAT3,
+    MAT4,
+    SAMPLER2D,
+    SAMPLERCUBE
+};
 
 
 // SetEnable
@@ -231,14 +226,13 @@ namespace grr
     };
 
 
-    typedef struct {
-        char *name;
-        UniformVariable_ variable;
-        UniformID index;
+    typedef struct ShaderUniform
+    {
+        UniformType type;
+        UniformID id;
         uint32_t stride;
-        void *data;
-        bool dirty;
-    } Uniform;
+        char *name;
+    } ShaderUniform;
 };
 
 

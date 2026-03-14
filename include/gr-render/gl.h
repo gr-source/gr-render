@@ -17,5 +17,9 @@ namespace grr {
 
     #define FIX std::string(__FILE__ "(" + std::to_string(__LINE__) + ") :")
 
+#ifdef DEBUG_MODE
     #define GL_CALL(func) func; check_erros_opengl(#func, FIX)
+#else // DEBUG_MODE
+    #define GL_CALL(func) func
+#endif
 }

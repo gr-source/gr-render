@@ -21,10 +21,6 @@ namespace gr
         virtual void SetIndexBuffer(std::shared_ptr<index_buffer>& ibo) override;
 
     private:
-        std::vector<std::shared_ptr<vertex_buffer>> m_vertex_buffers;
-
-        std::shared_ptr<index_buffer> m_index_buffer;
-
         uint32_t m_vertex_buffer_index;
 
         uint32_t m_id;

@@ -66,12 +66,17 @@ namespace gr
         }
 
         m_vertex_buffers.push_back(vbo);
+
+        vbo->Unbind();
+
+        Unbind();
     }
 
     void opengl_vertex_array::SetIndexBuffer(std::shared_ptr<index_buffer>& ibo)
     {
         Bind();
         ibo->Bind();
+        Unbind();
 
         m_index_buffer = ibo;
     }

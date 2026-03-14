@@ -47,6 +47,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
 
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+    $<$<CONFIG:Debug>:DEBUG_MODE>
+)
+
 if(GR_COMPILE_LINUX)
     option(GR_USE_GLEW "Use glw" ON)
 
@@ -109,3 +113,5 @@ else()
 endif()
 
 unset(GR_COMPILE_LINUX CACHE)
+
+
