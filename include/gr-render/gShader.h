@@ -30,9 +30,20 @@ namespace grr
 
         void unbind();
 
-        ShaderUniform *GetUniform(UniformID id) const;
+        inline ShaderUniform *GetUniforms() const
+        {
+            return m_uniforms;
+        }
 
-        size_t getUniformCount() const;
+        inline size_t GetUniformCount() const
+        {
+            return m_count;
+        }
+
+        inline size_t GetUniformBufferSize() const
+        {
+            return m_buffer_size;
+        }
 
         UniformID findUniform(const char *name);
 
@@ -40,6 +51,8 @@ namespace grr
         ShaderID shaderID;
 
         ShaderUniform *m_uniforms;
+
+        size_t m_buffer_size;
 
         size_t m_capacity;
 

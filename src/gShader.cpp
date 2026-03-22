@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <string.h>
 
-grr::gShader::gShader() : shaderID(GR_INVALID_ID), valid(false), m_uniforms(nullptr), m_count(0), m_capacity(0)
+grr::gShader::gShader() : shaderID(GR_INVALID_ID), valid(false), m_uniforms(nullptr), m_count(0), m_capacity(0), m_buffer_size(0)
 {}
 
 grr::gShader::~gShader()
@@ -151,6 +151,9 @@ UniformID grr::gShader::registry(const char *name, uint32_t count, UniformType t
     uniform.id = location;
     uniform.type = type;
     uniform.stride = stride;
+    uniform.offset = m_buffer_size;
+
+    m_buffer_size += stride;
 
     return uniformID;
 }
@@ -207,16 +210,6 @@ void grr::gShader::bind()
 void grr::gShader::unbind()
 {
     glUseProgram(0);
-}
-
-grr::ShaderUniform *grr::gShader::GetUniform(UniformID id) const
-{
-    return m_uniforms + id;
-}
-
-size_t grr::gShader::getUniformCount() const
-{
-    return m_count;
 }
 
 UniformID grr::gShader::findUniform(const char *name)

@@ -231,6 +231,7 @@ namespace grr
         UniformType type;
         UniformID id;
         uint32_t stride;
+        uint32_t offset;
         char *name;
     } ShaderUniform;
 };
