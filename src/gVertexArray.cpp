@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace grr
+namespace gr
 {
     gVertexArray::gVertexArray() : vertexID(GR_INVALID_ID)
     {

@@ -14,7 +14,7 @@
 #define TEXTURE_WRAP_CLAMP            1
 #define TEXTURE_WRAP_MIRROR           2
 
-namespace grr
+namespace gr
 {
     typedef struct Texture
     {

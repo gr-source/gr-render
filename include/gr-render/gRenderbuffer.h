@@ -2,8 +2,10 @@
 
 #include "gCommon.h"
 
-namespace grr {
-    class gRenderbuffer {
+namespace gr
+{
+    class gRenderbuffer
+    {
     public:
         gRenderbuffer();
         ~gRenderbuffer();

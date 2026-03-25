@@ -1,7 +1,7 @@
 #include "gRenderbuffer.h"
 #include "gl.h"
 
-namespace grr
+namespace gr
 {
     gRenderbuffer::gRenderbuffer() : renderbufferID(GR_INVALID_ID)
     {}

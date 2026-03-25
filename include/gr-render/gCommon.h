@@ -151,14 +151,14 @@ enum class UniformType
 
 typedef uint32_t GEnum;
 
-namespace grr
+namespace gr
 {
     class gRenderbuffer;
     class gVertexArray;
     class gFramebuffer;
     class gTexture;
     class gRender;
-    class gShader;
+    class Shader;
 
     enum RenderState : u64 {
         GR_FALSE               = 1 << 1,

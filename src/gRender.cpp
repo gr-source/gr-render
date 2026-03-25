@@ -1,10 +1,7 @@
 #include "gRender.h"
 
 #include "gFramebuffer.h"
-#include "gVertexArray.h"
-#include "gTexture.h"
-#include "gShader.h"
-#include "gError.h"
+
 #include "gl.h"
 
 static const GLenum GL_ENABLE_DISABLE_MAP[] = {
@@ -15,7 +12,7 @@ static const GLenum GL_ENABLE_DISABLE_MAP[] = {
     GL_BLEND
 };
 
-namespace grr {
+namespace gr {
     std::unordered_map<BufferBindingTarget, u32> gRender::m_bufferMap {
         {BufferBindingTarget::GR_ARRAY_BUFFER, GL_ARRAY_BUFFER},
         {BufferBindingTarget::GR_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER}

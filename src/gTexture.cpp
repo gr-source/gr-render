@@ -3,7 +3,7 @@
 #include "gCommon.h"
 #include "gl.h"
 
-namespace grr
+namespace gr
 {
 
     const TextureFormatInfo gTexture::TextureFormatInfoMapping[20] = {

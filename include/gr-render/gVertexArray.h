@@ -6,7 +6,7 @@
 
 #define GR_MAX_BLOCK_BUFFER 1024
 
-namespace grr
+namespace gr
 {
     class gVertexArray
     {

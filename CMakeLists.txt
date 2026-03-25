@@ -24,7 +24,6 @@ set(render_src
     src/gVertexArray.cpp
     src/gTexture.cpp
     src/gRender.cpp
-    src/gShader.cpp
     src/gCommon.cpp
     src/gError.cpp
     src/shader.cpp

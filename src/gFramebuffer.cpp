@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-namespace grr {
+namespace gr {
     u32 gFramebuffer::s_current = 0;
 
     std::unordered_map<gFramebufferFlags, u32> gFramebuffer::m_apiFramebuffer{
@@ -41,7 +41,7 @@ namespace grr {
     void gFramebuffer::SetRenderbuffer(gFramebufferFlags attachment) {
     }
 
-    void gFramebuffer::SetTexture(grr::gTexture* texture, gFramebufferFlags attachment, gFramebufferFlags textarget)
+    void gFramebuffer::SetTexture(gTexture* texture, gFramebufferFlags attachment, gFramebufferFlags textarget)
     {
         GL_CALL(glFramebufferTexture2D(GL_FRAMEBUFFER, m_apiFramebuffer[attachment], m_apiFramebuffer[textarget], texture->getTextureID(), 0));
     }

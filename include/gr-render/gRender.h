@@ -2,7 +2,7 @@
 
 #include "gCommon.h"
 
-namespace grr {
+namespace gr {
     class gRender
     {
     public:

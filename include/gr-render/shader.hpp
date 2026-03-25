@@ -1,16 +1,71 @@
 #pragma once
 
-#include <cstdint>
+#include "gCommon.h"
 
-namespace grr {
+#include <stdint.h>
 
-    class Shader {
+namespace gr
+{
+    class Shader
+    {
     public:
         Shader();
         ~Shader();
 
+        int build(const char **fragment, int nfrag, const char **vertex, int nvert);
+
+        UniformID registry(const char *name, uint32_t count, UniformType type);
+
+        template <typename T>
+        void set_uniform(const char *name, const T &data);
+
+        void setUniform(const char *name, const void *data);
+
+        void SetUniform(UniformID id, const void *data);
+
+        void bind();
+
+        void unbind();
+
+        inline ShaderUniform *GetUniforms() const
+        {
+            return m_uniforms;
+        }
+
+        inline size_t GetUniformCount() const
+        {
+            return m_count;
+        }
+
+        inline size_t GetUniformBufferSize() const
+        {
+            return m_buffer_size;
+        }
+
+        UniformID findUniform(const char *name);
+
     private:
-        std::uint32_t mID;
+        ShaderID shaderID;
+
+        ShaderUniform *m_uniforms;
+
+        size_t m_buffer_size;
+
+        size_t m_capacity;
+
+        size_t m_count;
+
+        void reallocate();
     };
-    
-} // namespace grr
+
+    template <typename T>
+    inline void Shader::set_uniform(const char *name, const T &data)
+    {
+        setUniform(name, &data);
+    }
+};
+
+
+
+
+

@@ -1,8 +1,5 @@
 #pragma once
 
 namespace grr {
-    const char *error();
-
-    void error(const char *fmt, ...);
-    
+    extern char last_engine_error[1024];
 } // namespace grr
