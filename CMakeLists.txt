@@ -39,7 +39,7 @@ unset(GR_COMPILE_STATIC_LIBRARY CACHE)
 
 find_package(gr-math REQUIRED)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GRMATH_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE )
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}>

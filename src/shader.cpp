@@ -135,8 +135,7 @@ namespace gr
                 stride = count * sizeof(Matrix4x4);
                 break;
             default:
-                // error("Type is not valid: ", name);
-                return -1;
+                break;
         }
 
         UniformID uniformID = m_count++;
