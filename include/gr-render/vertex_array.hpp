@@ -8,12 +8,14 @@ namespace gr
     class vertex_array
     {
     protected:
-        std::vector<std::shared_ptr<vertex_buffer>> m_vertex_buffers;
+        std::vector<vertex_buffer*> m_vertex_buffers;
 
-        std::shared_ptr<index_buffer> m_index_buffer;
+        index_buffer* m_index_buffer;
 
     public:
-        static std::shared_ptr<vertex_array> create();
+        static vertex_array* create();
+
+        vertex_array() : m_index_buffer(nullptr) {}
 
         virtual ~vertex_array() {}
 
@@ -21,11 +23,11 @@ namespace gr
 
         virtual void Unbind() const = 0;
 
-        virtual void AddVertexBuffer(std::shared_ptr<vertex_buffer>& vbo) = 0;
+        virtual void AddVertexBuffer(vertex_buffer* vbo) = 0;
 
-        virtual void SetIndexBuffer(std::shared_ptr<index_buffer>& ibo) = 0;
+        virtual void SetIndexBuffer(index_buffer* ibo) = 0;
 
-        inline std::vector<std::shared_ptr<vertex_buffer>> GetVertexBuffers()
+        inline std::vector<vertex_buffer*> GetVertexBuffers()
         {
             return m_vertex_buffers;
         }

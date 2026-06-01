@@ -4,8 +4,8 @@
 
 namespace gr
 {
-    std::shared_ptr<vertex_array> vertex_array::create()
+    vertex_array* vertex_array::create()
     {
-        return std::make_shared<opengl_vertex_array>();
+        return new opengl_vertex_array();
     }
 }

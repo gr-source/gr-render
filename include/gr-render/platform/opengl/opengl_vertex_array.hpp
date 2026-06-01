@@ -16,9 +16,9 @@ namespace gr
 
         virtual void Unbind() const override;
 
-        virtual void AddVertexBuffer(std::shared_ptr<vertex_buffer>& vbo) override;
+        virtual void AddVertexBuffer(vertex_buffer* vbo) override;
 
-        virtual void SetIndexBuffer(std::shared_ptr<index_buffer>& ibo) override;
+        virtual void SetIndexBuffer(index_buffer* ibo) override;
 
     private:
         uint32_t m_vertex_buffer_index;

@@ -41,9 +41,10 @@ namespace gr
         glBindVertexArray(0);
     }
 
-    void opengl_vertex_array::AddVertexBuffer(std::shared_ptr<vertex_buffer>& vbo)
+    void opengl_vertex_array::AddVertexBuffer(vertex_buffer* vbo)
     {
-        Bind();
+        glBindVertexArray(m_id);
+
         vbo->Bind();
 
         const auto& layout = vbo->GetLayout();
@@ -67,16 +68,14 @@ namespace gr
 
         m_vertex_buffers.push_back(vbo);
 
-        vbo->Unbind();
-
-        Unbind();
+        glBindVertexArray(0);
     }
 
-    void opengl_vertex_array::SetIndexBuffer(std::shared_ptr<index_buffer>& ibo)
+    void opengl_vertex_array::SetIndexBuffer(index_buffer* ibo)
     {
-        Bind();
+        glBindVertexArray(m_id);
         ibo->Bind();
-        Unbind();
+        glBindVertexArray(0);
 
         m_index_buffer = ibo;
     }
