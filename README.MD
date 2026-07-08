@@ -7,5 +7,5 @@ sudo cmake --build build --config Debug --target install
 ```
 * Biblioteca necessaria:
 
-
+Vou deixa sa bosta em opengl mesmo
 

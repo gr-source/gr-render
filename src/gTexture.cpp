@@ -33,15 +33,17 @@ namespace gr
     void GetGLFormat(uint32_t myFormat, GLint* internalFormat, GLenum* format, GLenum* type) {
         *type = GL_UNSIGNED_BYTE;
 
-        switch(myFormat) {
-            case TextureFormat_RGB:
+        switch(myFormat)
+        {
+    
+            case TEXTURE_FORMAT_RGB:
                 *internalFormat = GL_RGB;
                 *format = GL_RGB;
                 break;
-            case TextureFormat_RGBA:
+            case TEXTURE_FORMAT_RGBA:
                 *internalFormat = GL_RGBA;
                 *format = GL_RGBA;
-                break;
+                break;/*
             case TextureFormat_RGBA4444:
                 *internalFormat = GL_RGBA4; 
                 *format = GL_RGBA; 
@@ -50,15 +52,15 @@ namespace gr
             case TextureFormat_RGBA8888:
                 *internalFormat = GL_RGBA8; 
                 *format = GL_RGBA; 
-                break;
-            case TextureFormat_SRGB:
+                break;*/
+            case TEXTURE_FORMAT_SRGB:
                 *internalFormat = GL_SRGB;
                 *format = GL_RGB;
                 break;
-            case TextureFormat_SRGBA:
+            case TEXTURE_FORMAT_SRGBA:
                 *internalFormat = GL_SRGB8_ALPHA8;
                 *format = GL_RGBA;
-                break;
+                break;/*
             case TextureFormat_RGB444:
                 *internalFormat = GL_RGB4; 
                 *format = GL_RGB; 
@@ -72,40 +74,40 @@ namespace gr
             case TextureFormat_RGB888:
                 *internalFormat = GL_RGB8;
                 *format = GL_RGB; 
-                break;
-            case TextureFormat_RGB16F:
+                break;*/
+            case TEXTURE_FORMAT_RGB16F:
                 *internalFormat = GL_RGB16F;
                 *format = GL_RGB;
                 *type = GL_HALF_FLOAT;
-                break;
+                break;/*
             case TextureFormat_RGB32F:  
                 *internalFormat = GL_RGB32F;
                 *format = GL_RGB;
                 *type = GL_FLOAT;
-                break;
-            case TextureFormat_RGBA16F:  
+                break;*/
+            case TEXTURE_FORMAT_RGBA16F:  
                 *internalFormat = GL_RGBA16F;
                 *format = GL_RGBA;
                 *type = GL_HALF_FLOAT;
-                break;
+                break;/*
             case TextureFormat_RGBA32F:  
                 *internalFormat = GL_RGBA32F;
                 *format = GL_RGBA;
                 *type = GL_FLOAT;
-                break;
-            case TextureFormat_RED:
+                break;*/
+            case TEXTURE_FORMAT_RED:
                 *internalFormat = GL_R8; 
                 *format = GL_RED; 
                 break;
-            case TextureFormat_RG:
+            case TEXTURE_FORMAT_RG:
                 *internalFormat = GL_RG8; 
                 *format = GL_RG; 
                 break;
-            case TextureFormat_RG16F:
+            case TEXTURE_FORMAT_RG16F:
                 *internalFormat = GL_RG16F; 
                 *format = GL_RG; 
                 *type = GL_HALF_FLOAT; 
-                break;
+                break;/*
             case TextureFormat_RG32F:
                 *internalFormat = GL_RG32F; 
                 *format = GL_RG; 
@@ -121,11 +123,26 @@ namespace gr
                 *format = GL_RED_INTEGER; 
                 *type = GL_UNSIGNED_INT; 
                 break;
+                */
             default:
                 *internalFormat = GL_RGBA;
                 *format = GL_RGBA;
                 break;
         }
+    }
+
+    void Texture::create()
+    {
+        if (id == GR_INVALID_ID)
+            GL_CALL(glGenTextures(1, &id));
+    }
+
+    void Texture::destroy()
+    {
+        if (id != GR_INVALID_ID)
+            GL_CALL(glDeleteTextures(1, &id));
+
+        id = GR_INVALID_ID;
     }
 
     void BindTexture(Texture *texture)
@@ -142,7 +159,7 @@ namespace gr
         glBindTexture(target, 0);
     }
 
-    void ApplyTextureBuffer(Texture *texture, void* pixels)
+    void ApplyTextureBuffer(Texture *texture, const void* pixels)
     {
         GLint internalFmt;
         GLenum fmt, type;

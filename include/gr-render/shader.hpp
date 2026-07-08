@@ -12,7 +12,9 @@ namespace gr
         Shader();
         ~Shader();
 
-        int build(const char **fragment, int nfrag, const char **vertex, int nvert);
+        bool create(const char **fragment, size_t numFragments, const char **vertex, size_t numvertex, std::string* error);
+
+        void destroy();
 
         UniformID registry(const char *name, uint32_t count, UniformType type);
 
@@ -55,7 +57,7 @@ namespace gr
 
         size_t m_count;
 
-        void reallocate();
+        void grow();
     };
 
     template <typename T>

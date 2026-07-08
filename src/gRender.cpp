@@ -125,7 +125,7 @@ namespace gr {
 
     gRender::gRender()
         :
-            s_BackgroundColor(Color::black),
+            s_BackgroundColor(COLOR_BLACK),
             s_ViewportBounds{0.0f, 0.0f, 0.0f, 0.0f},
             s_StateMask(0)
     {}

@@ -28,6 +28,8 @@ set(render_src
     src/gError.cpp
     src/shader.cpp
     src/gl.cpp
+
+    src/uniformBuffer.cpp
 )
 
 if(GR_COMPILE_STATIC_LIBRARY)

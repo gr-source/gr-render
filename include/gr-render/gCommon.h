@@ -229,10 +229,13 @@ namespace gr
     typedef struct ShaderUniform
     {
         UniformType type;
-        UniformID id;
-        uint32_t stride;
+        UniformID location;
+
         uint32_t offset;
-        char *name;
+        uint32_t size;
+        uint32_t count;
+
+        char name[256];
     } ShaderUniform;
 };
 

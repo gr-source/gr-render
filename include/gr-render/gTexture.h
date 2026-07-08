@@ -14,15 +14,26 @@
 #define TEXTURE_WRAP_CLAMP            1
 #define TEXTURE_WRAP_MIRROR           2
 
+#define TEXTURE_FORMAT_RED      0
+#define TEXTURE_FORMAT_RG16F    1
+#define TEXTURE_FORMAT_RG       2
+#define TEXTURE_FORMAT_RGB16F   3
+#define TEXTURE_FORMAT_RGB      4
+#define TEXTURE_FORMAT_RGBA16F  5
+#define TEXTURE_FORMAT_RGBA     6
+#define TEXTURE_FORMAT_SRGB     7
+#define TEXTURE_FORMAT_SRGBA    8
+
 namespace gr
 {
     typedef struct Texture
     {
-        uint32_t width;
-        uint32_t height;
-        TextureID id;
+        TextureID id = GR_INVALID_ID;
+
+        uint32_t width = 0;
+        uint32_t height = 0;
         union {
-            TextureFlags flags;
+            TextureFlags flags = 0;
             struct
             {
                 uint32_t type     : 2; 
@@ -32,13 +43,17 @@ namespace gr
                 uint32_t reserved : 19;
             };
         };
+
+        void create();
+
+        void destroy();
     } Texture;
 
     void BindTexture(Texture* texture);
 
     void UnbindTexture(Texture* texture);
 
-    void ApplyTextureBufffer(Texture* texture, void* pixels);
+    void ApplyTextureBuffer(Texture* texture, const void* pixels);
 
     void ApplyTextureSettings(Texture* texture);
 
