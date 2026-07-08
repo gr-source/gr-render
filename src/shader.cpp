@@ -183,6 +183,8 @@ namespace gr
 
     void Shader::SetUniform(UniformID id, const void *data)
     {
+        assert(id < m_count);
+
         auto &uniform = m_uniforms[id];
 
         switch (uniform.type)
@@ -192,27 +194,28 @@ namespace gr
             case UniformType::BOOL:
             case UniformType::INT:
                 GL_CALL(glUniform1iv(uniform.location, uniform.count, (const GLint *)data));
-                break;
+                return;
             case UniformType::FLOAT:
                 GL_CALL(glUniform1fv(uniform.location, uniform.count, (const GLfloat *)data));
-                break;
+                return;
             case UniformType::VEC2:
                 GL_CALL(glUniform2fv(uniform.location, uniform.count, (const GLfloat *)data));
-                break;
+                return;
             case UniformType::VEC3:
                 GL_CALL(glUniform3fv(uniform.location, uniform.count, (const GLfloat *)data));
-                break;
+                return;
             case UniformType::VEC4:
                 GL_CALL(glUniform4fv(uniform.location, uniform.count, (const GLfloat *)data));
-                break;
+                return;
             case UniformType::MAT3:
                 GL_CALL(glUniformMatrix3fv(uniform.location, uniform.count, GL_FALSE, (const GLfloat *)data));
-                break;
+                return;
             case UniformType::MAT4:
                 GL_CALL(glUniformMatrix4fv(uniform.location, uniform.count, GL_FALSE, (const GLfloat *)data));
-                break;
+                return;
             default:
-                break;
+                assert(false && "Unknown uniform type.");
+                return;
         }
     }
 
