@@ -2,6 +2,10 @@
 
 #include "gCommon.h"
 
+#include <gr-math/gmath.hpp>
+
+#include <unordered_map>
+
 namespace gr {
     class gRender
     {
@@ -12,19 +16,15 @@ namespace gr {
 
         static void SetEnable(GEnum state, bool value);
 
+        static void SetDepthFunc(GEnum func);
+
         static void SetRenderState(RenderState state, u32 value);
 
         static std::string getRenderStateName(RenderState state);
 
         static bool Initialize();
 
-        static void Release();
-
     private:
-        static std::unordered_map<BufferBindingTarget, u32> m_bufferMap;
-
-        static std::unordered_map<u32, u32> m_renderStateMap;
-
         static gRender& GetInstance();
 
         // fields
@@ -32,7 +32,9 @@ namespace gr {
 
         Rect s_ViewportBounds;
 
-        u32 s_StateMask;
+        uint32_t s_StateMask;
+
+        uint32_t s_DepthFunc;
 
         // methods
         gRender();
@@ -42,5 +44,7 @@ namespace gr {
         void setViewport(const Rect& bounds);
 
         void setEnable(GEnum state, bool value);
+
+        void setDepthFunc(GEnum func);
     };
 }

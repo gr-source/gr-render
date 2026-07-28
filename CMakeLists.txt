@@ -20,9 +20,7 @@ set(render_src
     src/vertex_array.cpp
 
     src/gRenderbuffer.cpp
-    src/gFramebuffer.cpp
-    src/gVertexArray.cpp
-    src/gTexture.cpp
+    src/texture.cpp
     src/gRender.cpp
     src/gCommon.cpp
     src/gError.cpp

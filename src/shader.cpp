@@ -1,23 +1,15 @@
 #include "shader.hpp"
 
-#include "gCommon.h"
 #include "gl.h"
 
-#include <cstddef>
-#include <string.h>
+#include <cassert>
+#include <gr-math/gmath.hpp>
+
+#include <cstring>
 
 namespace gr
 {
-    Shader::Shader() : shaderID(GR_INVALID_ID), m_uniforms(nullptr), m_count(0), m_capacity(0), m_buffer_size(0)
-    {}
-
-    Shader::~Shader()
-    {
-        if (m_uniforms != nullptr)
-            free(m_uniforms);
-    }
-
-    bool Shader::create(const char **fragment, size_t numFragments, const char **vertex, size_t numVertex, std::string* error)
+    bool shader::create(const char **fragment, size_t numFragments, const char **vertex, size_t numVertex, std::string* error)
     {
         // Fragment shader
         uint32_t shader_fragment = GL_CALL(glCreateShader(GL_FRAGMENT_SHADER));
@@ -96,29 +88,32 @@ namespace gr
         return true;
     }
 
-    void Shader::destroy()
+    void shader::destroy()
     {
-        if (m_uniforms != nullptr)
-            free(m_uniforms);
+        if (uniforms != nullptr)
+            free(uniforms);
 
         if (shaderID != GR_INVALID_ID)
             GL_CALL(glDeleteShader(shaderID));
 
-        m_capacity = 0;
-        m_count = 0;
-
-        m_uniforms = nullptr;
-
         shaderID = GR_INVALID_ID;
+
+        capacity = 0;
+        count = 0;
+
+        if (uniforms != nullptr)
+            free(uniforms);
+
+        uniforms = nullptr;
     }
 
-    UniformID Shader::registry(const char *name, uint32_t count, UniformType type)
+    UniformID shader::registry(const char *name, uint32_t numElements, UniformType type)
     {
-        UniformID id = findUniform(name);
-        if (id != GR_INVALID_ID)
-            return id;
+        UniformID found = findUniform(name);
+        if (found != GR_INVALID_ID)
+            return found;
      
-        if (m_count >= m_capacity)
+        if (count >= capacity)
             grow();
 
         int location = glGetUniformLocation(shaderID, name);
@@ -156,23 +151,23 @@ namespace gr
                 break;
         }
 
-        UniformID uniformID = m_count++;
+        UniformID uniformID = static_cast<UniformID>(count++);
 
-        auto &uniform = m_uniforms[uniformID];
+        auto &uniform = uniforms[uniformID];
         strncpy(uniform.name, name, sizeof(uniform.name));
 
         uniform.location = location;
         uniform.type = type;
-        uniform.count = count;
+        uniform.count = numElements;
         uniform.size = stride;
-        uniform.offset = m_buffer_size;
+        uniform.offset = bufferSize;
 
-        m_buffer_size += stride;
+        bufferSize += stride;
 
         return uniformID;
     }
 
-    void Shader::setUniform(const char *name, const void *data)
+    void shader::setUniform(const char *name, const void *data)
     {
         UniformID id = findUniform(name);
         if (id == GR_INVALID_ID)
@@ -181,11 +176,13 @@ namespace gr
         return SetUniform(id, data);
     }
 
-    void Shader::SetUniform(UniformID id, const void *data)
+    void shader::SetUniform(UniformID id, const void *data)
     {
-        assert(id < m_count);
+        assert(id < count);
+        if (id >= count)
+            return;
 
-        auto &uniform = m_uniforms[id];
+        auto &uniform = uniforms[id];
 
         switch (uniform.type)
         {
@@ -219,39 +216,31 @@ namespace gr
         }
     }
 
-    void Shader::bind()
+    void shader::bind() const
     {
         GL_CALL(glUseProgram(shaderID));
     }
 
-    void Shader::unbind()
+    void shader::unbind() const
     {
         glUseProgram(0);
     }
 
-    UniformID Shader::findUniform(const char *name)
+    UniformID shader::findUniform(const char *name)
     {
-        for (size_t i=0;i<m_count;i++)
+        for (size_t i=0;i<count;i++)
         {
-            if (strcmp(m_uniforms[i].name, name) == 0)
+            if (strcmp(uniforms[i].name, name) == 0)
                 return i;
         }
         return GR_INVALID_ID;
     }
 
-    void Shader::grow()
+    void shader::grow()
     {
-        if (m_capacity)
-        {
-            m_capacity *= 2;
+        capacity = capacity > 0 ? capacity * 2 : 2;
 
-            m_uniforms = (ShaderUniform*)realloc(m_uniforms, m_capacity * sizeof(ShaderUniform));
-        } else
-        {
-            m_capacity = 1;
-
-            m_uniforms = (ShaderUniform*)malloc(m_capacity * sizeof(ShaderUniform));
-        }
+        uniforms = (uniform*)realloc(uniforms, capacity * sizeof(uniform));
     }
 }
 

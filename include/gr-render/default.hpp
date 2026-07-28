@@ -3,5 +3,7 @@
 
 namespace gr
 {
-    typedef struct Texture Texture;
+    typedef struct texture texture;
+
+    typedef struct shader shader;
 }

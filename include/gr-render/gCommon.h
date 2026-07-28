@@ -1,18 +1,6 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-#include <gr-math/types.hpp>
-#include <limits>
-#include <unordered_map>
-#include <iostream>
-#include <cassert>
-#include <string>
-#include <vector>
-
-#include <gr-math/gmath.hpp>
-
-#define GR_ASSERT(msg) assert(false && msg)
 
 using BufferType_       =       uint32_t;
 using BufferID          =       uint32_t;
@@ -22,7 +10,7 @@ using PrimitiveType_    =       uint32_t;
 using TextureFlags_     =       uint32_t;
 
 typedef uint32_t TextureID;
-typedef u32 TextureFlags;
+typedef uint32_t TextureFlags;
 
 using gTextureCubemapFace_  =   uint32_t;
 
@@ -64,83 +52,12 @@ enum PrimitiveType : PrimitiveType_
     TRIANGLES_FAN       = 6
 };
 
-enum TextureFormat : u16
-{
-    TextureFormat_RGB            = 0,
-    TextureFormat_SRGB           = 1,
-    TextureFormat_RGB444         = 3,
-    TextureFormat_RGB565         = 4,
-    TextureFormat_RGB888         = 5,
-    TextureFormat_SRGBA          = 6,
-    TextureFormat_RGBA           = 7,
-    TextureFormat_RGBA4444       = 8,
-    TextureFormat_RGBA8888       = 9,
-    TextureFormat_DepthComponent = 10,
-    TextureFormat_RED_INTEGER    = 11,
-    TextureFormat_RGB16F         = 12,
-    TextureFormat_RGB32F         = 13,
-    TextureFormat_RGBA16F        = 14,
-    TextureFormat_RGBA32F        = 15,
-    TextureFormat_RED            = 16,
-    TextureFormat_RG             = 17,
-    TextureFormat_RG16F          = 18,
-    TextureFormat_RG32F          = 19
-};
-
 typedef struct TextureFormatInfo
 {
     std::uint32_t internalformat;
     std::uint32_t format;
     std::uint32_t type;
 } TextureFormatInfo;
-
-
-enum gTextureFlags : TextureFlags_
-{
-    gTextureFlags_None                  = 1 << 0,
-    gTextureFlags_MipMaps               = 1 << 1,
-    gTextureFlags_Texture               = 1 << 2,
-    gTextureFlags_Cubemap               = 1 << 3,
-    gTextureFlags_Filter_Linear         = 1 << 4,
-    gTextureFlags_Filter_Nearest        = 1 << 5,
-    gTextureFlags_Filter_Trilinear      = 1 << 6,
-    gTextureFlags_Filter_Bilinear       = 1 << 7,
-    gTextureFlags_Cubemap_Positive_X    = 1 << 8,
-    gTextureFlags_Cubemap_Negative_X    = 1 << 9,
-    gTextureFlags_Cubemap_Positive_Y    = 1 << 10,
-    gTextureFlags_Cubemap_Negative_Y    = 1 << 11,
-    gTextureFlags_Cubemap_Positive_Z    = 1 << 12,
-    gTextureFlags_Cubemap_Negative_Z    = 1 << 13,
-    gTextureFlags_Clamp_Repeat          = 1 << 14,
-    gTextureFlags_Clamp_Border          = 1 << 15,
-    gTextureFlags_Clamp_Edge            = 1 << 16
-};
-
-enum gTextureCubemapFace : gTextureCubemapFace_
-{
-    gTextureCubemapFace_Front   = gTextureFlags_Cubemap_Positive_X,
-    gTextureCubemapFace_Back    = gTextureFlags_Cubemap_Negative_X,
-    gTextureCubemapFace_Top     = gTextureFlags_Cubemap_Positive_Y,
-    gTextureCubemapFace_Bottom  = gTextureFlags_Cubemap_Negative_Y,
-    gTextureCubemapFace_Left    = gTextureFlags_Cubemap_Positive_Z,
-    gTextureCubemapFace_Right   = gTextureFlags_Cubemap_Negative_Z,
-    gTextureCubemapFace_All     = gTextureFlags_Cubemap_Positive_X | gTextureFlags_Cubemap_Negative_X | gTextureFlags_Cubemap_Positive_Y | gTextureFlags_Cubemap_Negative_Y | gTextureFlags_Cubemap_Positive_Z | gTextureFlags_Cubemap_Negative_Z
-};
-
-enum class UniformType
-{
-    BOOL,
-    INT,
-    FLOAT,
-    VEC2,
-    VEC3,
-    VEC4,
-    MAT3,
-    MAT4,
-    SAMPLER2D,
-    SAMPLERCUBE
-};
-
 
 // SetEnable
 #define GR_CULL_FACE            0
@@ -149,18 +66,21 @@ enum class UniformType
 #define GR_FRAMEBUFFER_SRGB     3
 #define GR_BLEND                4
 
+// depth func
+#define GR_DEPTH_FUNC_ALWAYS    0
+#define GR_DEPTH_FUNC_NEVER     1
+#define GR_DEPTH_FUNC_LESS      2
+#define GR_DEPTH_FUNC_EQUAL     3
+#define GR_DEPTH_FUNC_LEQUAL    4
+#define GR_DEPTH_FUNC_GREATER   5
+#define GR_DEPTH_FUNC_NOTEQUAL  6
+#define GR_DEPTH_FUNC_GEQUAL    7
+
 typedef uint32_t GEnum;
 
 namespace gr
 {
-    class gRenderbuffer;
-    class gVertexArray;
-    class gFramebuffer;
-    class gTexture;
-    class gRender;
-    class Shader;
-
-    enum RenderState : u64 {
+    enum RenderState : uint64_t {
         GR_FALSE               = 1 << 1,
         GR_TRUE                = 1 << 2,
         GR_BACKGROUND          = 1 << 4,
@@ -169,74 +89,11 @@ namespace gr
         GR_CULL                = 1 << 8,
         GR_FRONT               = 1 << 9,
         GR_BACK                = 1 << 10,
-        GR_DEPTH_MASK          = 1 << 13,
-        GR_DEPTH_FUNC          = 1 << 14,
-        GR_DEPTH_ALWAYS        = 1 << 15,
-        GR_DEPTH_NEVER         = 1 << 16,
-        GR_DEPTH_LESS          = 1 << 17,
-        GR_DEPTH_EQUAL         = 1 << 18,
-        GR_DEPTH_LEQUAL        = 1 << 19,
-        GR_DEPTH_GREATER       = 1 << 20,
-        GR_DEPTH_NOTEQUAL      = 1 << 21,
-        GR_DEPTH_GEQUAL        = 1 << 22,
-        GR_SRC_ALPHA           = 1 << 26,
+        // GR_DEPTH_MASK          = 1 << 13,
+        // GR_DEPTH_FUNC          = 1 << 14,
+        // GR_SRC_ALPHA           = 1 << 26,
         GR_ONE_MINUS_SRC_ALPHA = 1 << 27
     };
-
-    enum BufferBindingTarget {
-        GR_ARRAY_BUFFER              = 1 << 1,
-        // GR_COPY_READ_BUFFER          = 1 << 3,
-        // GR_COPY_WRITE_BUFFER         = 1 << 4,
-        // GR_DRAW_INDIRECT_BUFFER      = 1 << 5,
-        GR_ELEMENT_ARRAY_BUFFER      = 1 << 6,
-        // GR_PIXEL_PACK_BUFFER         = 1 << 7,
-        // GR_PIXEL_UNPACK_BUFFER       = 1 << 8,
-        // GR_TEXTURE_BUFFER            = 1 << 11, // OpenGL ES 3.1
-        // GR_TRANSFORM_FEEDBACK_BUFFER = 1 << 12,
-        // GR_UNIFORM_BUFFER            = 1 << 13,
-    };
-
-    enum gFramebufferFlags : u32 {
-        gFramebufferFlags_Color_Attachiment0 = 1 << 0,
-        gFramebufferFlags_Color_Attachiment1 = 1 << 1,
-        gFramebufferFlags_Color_Attachiment2 = 1 << 2,
-        gFramebufferFlags_Color_Attachiment3 = 1 << 3,
-        gFramebufferFlags_Color_Attachiment4 = 1 << 4,
-        gFramebufferFlags_Color_Attachiment5 = 1 << 5,
-        gFramebufferFlags_Depth_Attachiment  = 1 << 7,
-        gFramebufferFlags_Cubemap_Positive_X  = 1 << 8,
-        gFramebufferFlags_Cubemap_Negative_X  = 1 << 9,
-        gFramebufferFlags_Cubemap_Positive_Y  = 1 << 10,
-        gFramebufferFlags_Cubemap_Negative_Y  = 1 << 11,
-        gFramebufferFlags_Cubemap_Positive_Z  = 1 << 12,
-        gFramebufferFlags_Cubemap_Negative_Z  = 1 << 13,
-        gFramebufferFlags_Cubemap             = 1 << 14,
-        gFramebufferFlags_Texture             = 1 << 15,
-    };
-
-    enum RenderbufferType {
-        RenderbufferType_Depth_Component     = 1 << 0,
-        RenderbufferType_Depth_Component16   = 1 << 1,
-        RenderbufferType_Depth_Component24   = 1 << 2,
-        RenderbufferType_Depth_Component32F  = 1 << 3,
-        RenderbufferType_Depth24_Stencil8    = 1 << 4,
-        RenderbufferType_Depth_Stencil       = 1 << 5,
-        RenderbufferType_Depth32F_Stencil8   = 1 << 6,
-        RenderbufferType_Stencil             = 1 << 7
-    };
-
-
-    typedef struct ShaderUniform
-    {
-        UniformType type;
-        UniformID location;
-
-        uint32_t offset;
-        uint32_t size;
-        uint32_t count;
-
-        char name[256];
-    } ShaderUniform;
 };
 
 

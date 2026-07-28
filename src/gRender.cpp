@@ -1,7 +1,5 @@
 #include "gRender.h"
 
-#include "gFramebuffer.h"
-
 #include "gl.h"
 
 static const GLenum GL_ENABLE_DISABLE_MAP[] = {
@@ -12,7 +10,9 @@ static const GLenum GL_ENABLE_DISABLE_MAP[] = {
     GL_BLEND
 };
 
-namespace gr {
+namespace gr
+{
+    /*
     std::unordered_map<BufferBindingTarget, u32> gRender::m_bufferMap {
         {BufferBindingTarget::GR_ARRAY_BUFFER, GL_ARRAY_BUFFER},
         {BufferBindingTarget::GR_ELEMENT_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER}
@@ -30,6 +30,7 @@ namespace gr {
         {GR_TRUE, GL_TRUE},
         {GR_ONE_MINUS_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA}
     };
+    */
 
     void gRender::SetBackgroundColor(const Color &color)
     {
@@ -44,6 +45,12 @@ namespace gr {
     void gRender::SetEnable(GEnum state, bool value)
     {
         GetInstance().setEnable(state, value);
+    }
+
+
+    void gRender::SetDepthFunc(GEnum func)
+    {
+        GetInstance().setDepthFunc(func);
     }
 
     void gRender::SetRenderState(RenderState state, u32 value)
@@ -67,6 +74,7 @@ namespace gr {
             }
             return GL_CALL(glCullFace(GL_FRONT));
         }
+                      /*
         case GR_DEPTH_MASK: {
             GL_CALL(glDepthMask(m_renderStateMap[value]));
             break;
@@ -78,6 +86,7 @@ namespace gr {
             glBlendFunc(GL_SRC_ALPHA, m_renderStateMap[value]);
             break;
         }
+                           */
         default:
             std::cout << "Invalid Va: " << getRenderStateName(state) << std::endl;
         }
@@ -100,21 +109,9 @@ namespace gr {
         #undef GET_ENUM_NAME
     }
 
-    bool gRender::Initialize() {
-        #if !GR_OPENGLES3
-        if (glewInit() != GLEW_OK) {
-            return false;
-        }
-        #endif
-        return true;
-    }
-
-    void gRender::Release() {
-        m_bufferMap.clear();
-
-        m_renderStateMap.clear();
-
-        gFramebuffer::Release();
+    bool gRender::Initialize()
+    {
+        return glewInit() == GLEW_OK;
     }
 
     gRender& gRender::GetInstance()
@@ -154,21 +151,71 @@ namespace gr {
     {
         uint32_t bit = 1ULL << state;
 
-        uint8_t enabled = s_StateMask & bit;
+        bool enabled = (s_StateMask & bit) != 0;
         if (enabled != value)
         {
             if (value)
             {
                 s_StateMask |= bit;
 
-                glEnable(GL_ENABLE_DISABLE_MAP[state]);
+                GL_CALL(glEnable(GL_ENABLE_DISABLE_MAP[state]));
             } else
             {
                 s_StateMask &= ~bit;
 
-                glDisable(GL_ENABLE_DISABLE_MAP[state]);
+                GL_CALL(glDisable(GL_ENABLE_DISABLE_MAP[state]));
             }
         }
+    }
+
+
+    void gRender::setDepthFunc(GEnum func)
+    {
+        if (func == s_DepthFunc)
+            return;
+
+        GLenum glFunc;
+
+        switch (func)
+        {
+        case GR_DEPTH_FUNC_ALWAYS:
+            glFunc = GL_ALWAYS;
+            break;
+
+        case GR_DEPTH_FUNC_NEVER:
+            glFunc = GL_NEVER;
+            break;
+
+        case GR_DEPTH_FUNC_LESS:
+            glFunc = GL_LESS;
+            break;
+
+        case GR_DEPTH_FUNC_EQUAL:
+            glFunc = GL_EQUAL;
+            break;
+
+        case GR_DEPTH_FUNC_LEQUAL:
+            glFunc = GL_LEQUAL;
+            break;
+
+        case GR_DEPTH_FUNC_GREATER:
+            glFunc = GL_GREATER;
+            break;
+
+        case GR_DEPTH_FUNC_NOTEQUAL:
+            glFunc = GL_NOTEQUAL;
+            break;
+
+        case GR_DEPTH_FUNC_GEQUAL:
+            glFunc = GL_GEQUAL;
+            break;
+
+        default:
+            return;
+        }
+
+        GL_CALL(glDepthFunc(glFunc));
+        s_DepthFunc = func;
     }
 }
 
