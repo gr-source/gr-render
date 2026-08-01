@@ -20,8 +20,6 @@ namespace gr {
 
         static void SetRenderState(RenderState state, u32 value);
 
-        static std::string getRenderStateName(RenderState state);
-
         static bool Initialize();
 
     private:

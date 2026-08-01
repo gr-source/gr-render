@@ -88,25 +88,8 @@ namespace gr
         }
                            */
         default:
-            std::cout << "Invalid Va: " << getRenderStateName(state) << std::endl;
+            break;
         }
-    }
-
-    std::string gRender::getRenderStateName(RenderState state) {
-        #define GET_ENUM_NAME(e) case e: return #e
-        switch (state) {
-        GET_ENUM_NAME(GR_FALSE);
-        GET_ENUM_NAME(GR_TRUE);
-        GET_ENUM_NAME(GR_BACKGROUND);
-        GET_ENUM_NAME(GR_DEPTH_BUFFER);
-        GET_ENUM_NAME(GR_COLOR_BUFFER);
-        GET_ENUM_NAME(GR_CULL);
-        GET_ENUM_NAME(GR_FRONT);
-        GET_ENUM_NAME(GR_BACK);
-        default:
-            return "undefined";
-        }
-        #undef GET_ENUM_NAME
     }
 
     bool gRender::Initialize()
