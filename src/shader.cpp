@@ -3,7 +3,6 @@
 #include "gl.h"
 
 #include <cassert>
-#include <gr-math/gmath.hpp>
 
 #include <cstring>
 
@@ -133,19 +132,19 @@ namespace gr
                 stride = sizeof(GLfloat);
                 break;
             case UniformType::VEC2:
-                stride = sizeof(Vector2);
+                stride = sizeof(GLfloat) * 2;
                 break;
             case UniformType::VEC3:
-                stride = sizeof(Vector3);
+                stride = sizeof(GLfloat) * 3;
                 break;
             case UniformType::VEC4:
-                stride = sizeof(Vector4);
+                stride = sizeof(GLfloat) * 4;
                 break;
             case UniformType::MAT3:
-                stride = sizeof(Matrix3x3);
+                stride = sizeof(GLfloat) * 3 * 3;
                 break;
             case UniformType::MAT4:
-                stride = sizeof(Matrix4x4);
+                stride = sizeof(GLfloat) * 4 * 4;
                 break;
             default:
                 break;

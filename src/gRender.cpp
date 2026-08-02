@@ -32,12 +32,12 @@ namespace gr
     };
     */
 
-    void gRender::SetBackgroundColor(const Color &color)
+    void gRender::SetBackgroundColor(const float color[4])
     {
         GetInstance().setBackgroundColor(color);
     }
 
-    void gRender::SetViewport(const Rect &bounds)
+    void gRender::SetViewport(const float bounds[4])
     {
         GetInstance().setViewport(bounds);
     }
@@ -53,7 +53,7 @@ namespace gr
         GetInstance().setDepthFunc(func);
     }
 
-    void gRender::SetRenderState(RenderState state, u32 value)
+    void gRender::SetRenderState(RenderState state, uint32_t value)
     {
         switch (state) {
         case GR_BACKGROUND: {
@@ -105,28 +105,40 @@ namespace gr
 
     gRender::gRender()
         :
-            s_BackgroundColor(COLOR_BLACK),
+            s_BackgroundColor{0.0f, 0.0f, 0.0f, 0.0f},
             s_ViewportBounds{0.0f, 0.0f, 0.0f, 0.0f},
             s_StateMask(0)
     {}
 
-    void gRender::setBackgroundColor(const Color& color)
+    void gRender::setBackgroundColor(const float color[4])
     {
-        if (color.r != s_BackgroundColor.r || color.g != s_BackgroundColor.g || 
-            color.b != s_BackgroundColor.b || color.a != s_BackgroundColor.a) 
+        if (
+                color[0] != s_BackgroundColor[0] ||
+                color[1] != s_BackgroundColor[1] || 
+                color[2] != s_BackgroundColor[2] ||
+                color[3] != s_BackgroundColor[3]) 
         {
-            GL_CALL(glClearColor(color.r, color.g, color.b, color.a));
-            s_BackgroundColor = color;
+            GL_CALL(glClearColor(color[0], color[1], color[2], color[3]));
+            s_BackgroundColor[0] = color[0];
+            s_BackgroundColor[1] = color[1];
+            s_BackgroundColor[2] = color[2];
+            s_BackgroundColor[3] = color[3];
         }
     }
 
-    void gRender::setViewport(const Rect& bounds)
+    void gRender::setViewport(const float bounds[4])
     {
-        if (bounds.x != s_ViewportBounds.x || bounds.y != s_ViewportBounds.y || 
-            bounds.w != s_ViewportBounds.w || bounds.h != s_ViewportBounds.h)
+        if (
+                bounds[0] != s_ViewportBounds[0] ||
+                bounds[1] != s_ViewportBounds[1] ||
+                bounds[2] != s_ViewportBounds[2] ||
+                bounds[3] != s_ViewportBounds[3])
         {
-            GL_CALL(glViewport(bounds.x, bounds.y, bounds.w, bounds.h));
-            s_ViewportBounds = bounds;
+            GL_CALL(glViewport(bounds[0], bounds[1], bounds[2], bounds[3]));
+            s_ViewportBounds[0] = bounds[0];
+            s_ViewportBounds[1] = bounds[1];
+            s_ViewportBounds[2] = bounds[2];
+            s_ViewportBounds[3] = bounds[3];
         }
     }
 
