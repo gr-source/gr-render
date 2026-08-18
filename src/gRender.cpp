@@ -2,7 +2,7 @@
 
 #include "gl.h"
 
-static const GLenum GL_ENABLE_DISABLE_MAP[] = {
+static constexpr GLenum GL_ENABLE_DISABLE_MAP[] = {
     GL_CULL_FACE,
     GL_DEPTH_TEST,
     GL_MULTISAMPLE,
@@ -32,14 +32,14 @@ namespace gr
     };
     */
 
-    void gRender::SetBackgroundColor(const float color[4])
+    void gRender::SetBackgroundColor(const Color& color)
     {
         GetInstance().setBackgroundColor(color);
     }
 
-    void gRender::SetViewport(const float bounds[4])
+    void gRender::SetViewport(const Rect& viewport)
     {
-        GetInstance().setViewport(bounds);
+        GetInstance().setViewport(viewport);
     }
 
     void gRender::SetEnable(GEnum state, bool value)
@@ -110,7 +110,7 @@ namespace gr
             s_StateMask(0)
     {}
 
-    void gRender::setBackgroundColor(const float color[4])
+    void gRender::setBackgroundColor(const Color& color)
     {
         if (
                 color[0] != s_BackgroundColor[0] ||
@@ -126,19 +126,19 @@ namespace gr
         }
     }
 
-    void gRender::setViewport(const float bounds[4])
+    void gRender::setViewport(const Rect& viewport)
     {
         if (
-                bounds[0] != s_ViewportBounds[0] ||
-                bounds[1] != s_ViewportBounds[1] ||
-                bounds[2] != s_ViewportBounds[2] ||
-                bounds[3] != s_ViewportBounds[3])
+                viewport[0] != s_ViewportBounds[0] ||
+                viewport[1] != s_ViewportBounds[1] ||
+                viewport[2] != s_ViewportBounds[2] ||
+                viewport[3] != s_ViewportBounds[3])
         {
-            GL_CALL(glViewport(bounds[0], bounds[1], bounds[2], bounds[3]));
-            s_ViewportBounds[0] = bounds[0];
-            s_ViewportBounds[1] = bounds[1];
-            s_ViewportBounds[2] = bounds[2];
-            s_ViewportBounds[3] = bounds[3];
+            GL_CALL(glViewport(viewport[0], viewport[1], viewport[2], viewport[3]));
+            s_ViewportBounds[0] = viewport[0];
+            s_ViewportBounds[1] = viewport[1];
+            s_ViewportBounds[2] = viewport[2];
+            s_ViewportBounds[3] = viewport[3];
         }
     }
 

@@ -1,4 +1,4 @@
-#include "texture.h"
+#include "texture.hpp"
 
 #include "gl.h"
 
@@ -89,11 +89,13 @@ namespace gr
                 *format = GL_RG; 
                 *type = GL_FLOAT; 
                 break;
-            case TextureFormat_DepthComponent: 
+                */
+            case TEXTURE_FORMAT_DEPTH: 
                 *internalFormat = GL_DEPTH_COMPONENT;
                 *format = GL_DEPTH_COMPONENT;
                 *type = GL_FLOAT;
                 break;
+                /*
             case TextureFormat_RED_INTEGER:
                 *internalFormat = GL_R8; 
                 *format = GL_RED_INTEGER; 

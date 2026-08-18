@@ -2,15 +2,16 @@
 
 #include "gCommon.h"
 
-#include <unordered_map>
+#include "color.hpp"
+#include "rect.hpp"
 
 namespace gr {
     class gRender
     {
     public:
-        static void SetBackgroundColor(const float color[4]);
+        static void SetBackgroundColor(const Color& color);
 
-        static void SetViewport(const float bounds[4]);
+        static void SetViewport(const Rect& viewport);
 
         static void SetEnable(GEnum state, bool value);
 
@@ -24,9 +25,9 @@ namespace gr {
         static gRender& GetInstance();
 
         // fields
-        float s_BackgroundColor[4];
+        Color s_BackgroundColor;
 
-        float s_ViewportBounds[4];
+        Rect s_ViewportBounds;
 
         uint32_t s_StateMask;
 
@@ -35,9 +36,9 @@ namespace gr {
         // methods
         gRender();
 
-        void setBackgroundColor(const float color[4]);
+        void setBackgroundColor(const Color& color);
 
-        void setViewport(const float bounds[4]);
+        void setViewport(const Rect& viewport);
 
         void setEnable(GEnum state, bool value);
 

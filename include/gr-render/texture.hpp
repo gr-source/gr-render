@@ -24,6 +24,8 @@
 #define TEXTURE_FORMAT_SRGB     7
 #define TEXTURE_FORMAT_SRGBA    8
 
+#define TEXTURE_FORMAT_DEPTH 9
+
 namespace gr
 {
     typedef struct texture
