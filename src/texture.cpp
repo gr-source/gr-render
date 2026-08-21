@@ -24,11 +24,11 @@ namespace gr
                 *internalFormat = GL_RGBA4; 
                 *format = GL_RGBA; 
                 *type = GL_UNSIGNED_SHORT_4_4_4_4; 
-                break;
-            case TextureFormat_RGBA8888:
+                break; */
+            case TEXTURE_FORMAT_RGBA8:
                 *internalFormat = GL_RGBA8; 
                 *format = GL_RGBA; 
-                break;*/
+                break;
             case TEXTURE_FORMAT_SRGB:
                 *internalFormat = GL_SRGB;
                 *format = GL_RGB;
@@ -47,10 +47,11 @@ namespace gr
                 *format = GL_RGB; 
                 *type = GL_UNSIGNED_SHORT_5_6_5; 
                 break;
-            case TextureFormat_RGB888:
+                */
+            case TEXTURE_FORMAT_RGB8:
                 *internalFormat = GL_RGB8;
                 *format = GL_RGB; 
-                break;*/
+                break;
             case TEXTURE_FORMAT_RGB16F:
                 *internalFormat = GL_RGB16F;
                 *format = GL_RGB;
@@ -158,7 +159,7 @@ namespace gr
             glTexImage2D(GL_TEXTURE_2D, 0, internalFmt, width, height, 0, fmt, type, pixels);
         }
 
-        if (filter >= TEXTURE_FILTER_NEAREST_MIPMAP)
+        if (filter >= TEXTURE_FILTER_NEAREST_MIPMAP_NEAREST)
         {
             glGenerateMipmap(target);
         }
@@ -168,17 +169,38 @@ namespace gr
     {
         GLenum target = (type == TEXTURE_TYPE_CUBE) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 
-        GLint glFilter;
-        switch(filter)
+        switch (filter)
         {
-            case TEXTURE_FILTER_NEAREST:        glFilter = GL_NEAREST; break;
-            case TEXTURE_FILTER_LINEAR:         glFilter = GL_LINEAR; break;
-            case TEXTURE_FILTER_NEAREST_MIPMAP: glFilter = GL_NEAREST_MIPMAP_NEAREST; break;
-            case TEXTURE_FILTER_LINEAR_MIPMAP:  glFilter = GL_LINEAR_MIPMAP_LINEAR; break;
-            default: glFilter = GL_LINEAR;
+            case TEXTURE_FILTER_NEAREST:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                break;
+
+            case TEXTURE_FILTER_LINEAR:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                break;
+
+            case TEXTURE_FILTER_NEAREST_MIPMAP_NEAREST:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                break;
+
+            case TEXTURE_FILTER_LINEAR_MIPMAP_NEAREST:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                break;
+
+            case TEXTURE_FILTER_NEAREST_MIPMAP_LINEAR:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                break;
+
+            case TEXTURE_FILTER_LINEAR_MIPMAP_LINEAR:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                break;
         }
-        glTexParameteri(target, GL_TEXTURE_MIN_FILTER, glFilter);
-        glTexParameteri(target, GL_TEXTURE_MAG_FILTER, (glFilter == GL_NEAREST) ? GL_NEAREST : GL_LINEAR);
 
         GLint glWrap;
         switch(wrap) {
