@@ -8,6 +8,45 @@
 
 namespace gr
 {
+    UniformType to_uniform_type(GLenum type)
+    {
+        switch (type)
+        {
+            case GL_BOOL:
+                return UniformType::BOOL;
+
+            case GL_INT:
+                return UniformType::INT;
+
+            case GL_FLOAT:
+                return UniformType::FLOAT;
+
+            case GL_FLOAT_VEC2:
+                return UniformType::VEC2;
+
+            case GL_FLOAT_VEC3:
+                return UniformType::VEC3;
+
+            case GL_FLOAT_VEC4:
+                return UniformType::VEC4;
+
+            case GL_FLOAT_MAT3:
+                return UniformType::MAT3;
+
+            case GL_FLOAT_MAT4:
+                return UniformType::MAT4;
+
+            case GL_SAMPLER_2D:
+                return UniformType::SAMPLER2D;
+
+            case GL_SAMPLER_CUBE:
+                return UniformType::SAMPLERCUBE;
+
+            default:
+                throw std::runtime_error("Unsupported uniform type");
+        }
+    }
+
     bool shader::create(const char **fragment, size_t numFragments, const char **vertex, size_t numVertex, std::string* error)
     {
         // Fragment shader
@@ -84,6 +123,35 @@ namespace gr
         GL_CALL(glDeleteShader(shader_fragment));
         GL_CALL(glDeleteShader(shader_vertex));
 
+        GLint count = 0;
+        glGetProgramiv(shaderID, GL_ACTIVE_UNIFORMS, &count);
+
+        for (GLint i = 0; i < count; ++i)
+        {
+            char name[256];
+            GLsizei length = 0;
+            GLint size = 0;
+            GLenum gltype = 0;
+
+            glGetActiveUniform(
+                shaderID,
+                i,
+                sizeof(name),
+                &length,
+                &size,
+                &gltype,
+                name
+            );
+
+            name[length] = '\0';
+
+            try
+            {
+                registry(name, 1, to_uniform_type(gltype));
+            } catch (const std::exception& e)
+            {}
+        }
+
         return true;
     }
 
@@ -99,9 +167,6 @@ namespace gr
 
         capacity = 0;
         count = 0;
-
-        if (uniforms != nullptr)
-            free(uniforms);
 
         uniforms = nullptr;
     }
@@ -237,9 +302,11 @@ namespace gr
 
     void shader::grow()
     {
-        capacity = capacity > 0 ? capacity * 2 : 2;
+        capacity =
+            capacity > 0 ? capacity * 2 : 2;
 
-        uniforms = (uniform*)realloc(uniforms, capacity * sizeof(uniform));
+        uniforms =
+            (uniform*)realloc(uniforms, capacity * sizeof(uniform));
     }
 }
 
