@@ -8,6 +8,8 @@ option(GR_COMPILE_STATIC_LIBRARY "Compile Static Library" OFF)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/lib)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(PLATFORM_OPENGL
     src/platform/opengl/opengl_vertex_buffer.cpp
     src/platform/opengl/opengl_index_buffer.cpp
@@ -19,11 +21,8 @@ set(render_src
     src/index_buffer.cpp
     src/vertex_array.cpp
 
-    src/gRenderbuffer.cpp
     src/texture.cpp
     src/gRender.cpp
-    src/gCommon.cpp
-    src/gError.cpp
     src/shader.cpp
     src/gl.cpp
 

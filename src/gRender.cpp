@@ -92,9 +92,15 @@ namespace gr
         }
     }
 
-    bool gRender::Initialize()
+    bool gRender::Initialize(std::string& error)
     {
-        return glewInit() == GLEW_OK;
+        GLenum err = glewInit();
+        if (GLEW_OK != err)
+        {
+            error = std::string((const char*)glewGetErrorString(err));
+        }
+
+        return GLEW_OK != err;
     }
 
     gRender& gRender::GetInstance()

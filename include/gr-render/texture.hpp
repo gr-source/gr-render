@@ -35,12 +35,12 @@ namespace gr
 {
     typedef struct texture
     {
-        TextureID id = GR_INVALID_ID;
+        uint32_t id = GR_INVALID_ID;
 
         uint32_t width = 0;
         uint32_t height = 0;
         union {
-            TextureFlags flags = 0;
+            uint32_t flags = 0;
             struct
             {
                 uint32_t type     : 2; 

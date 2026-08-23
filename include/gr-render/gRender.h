@@ -5,6 +5,8 @@
 #include "color.hpp"
 #include "rect.hpp"
 
+#include <string>
+
 namespace gr {
     class gRender
     {
@@ -19,7 +21,7 @@ namespace gr {
 
         static void SetRenderState(RenderState state, uint32_t value);
 
-        static bool Initialize();
+        static bool Initialize(std::string& error);
 
     private:
         static gRender& GetInstance();

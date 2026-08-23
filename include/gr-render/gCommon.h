@@ -7,21 +7,11 @@ using BufferID          =       uint32_t;
 
 using PrimitiveType_    =       uint32_t;
 
-using TextureFlags_     =       uint32_t;
-
-typedef uint32_t TextureID;
-typedef uint32_t TextureFlags;
-
-using gTextureCubemapFace_  =   uint32_t;
 
 // Shader
 typedef uint32_t UniformID;
 
 typedef uint32_t ShaderID;
-
-typedef uint32_t RenderbufferID;
-
-typedef uint32_t VertexID;
 
 // ***** Renderbuffer ***** //
 
